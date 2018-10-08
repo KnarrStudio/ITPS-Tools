@@ -1,8 +1,12 @@
-# Dependencies
-.psci_modules
-bower_components
-node_modules
 
-# Generated files
-.psci
-output
+# Created by https://www.gitignore.io/api/powershell
+
+### PowerShell ###
+# Exclude packaged modules
+*.zip
+
+# Exclude .NET assemblies from source
+*.dll
+
+
+# End of https://www.gitignore.io/api/powershell
