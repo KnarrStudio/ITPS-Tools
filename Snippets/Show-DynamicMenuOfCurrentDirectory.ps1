@@ -2,48 +2,67 @@ Function Show-DynamicMenu
 {
   <#
       .SYNOPSIS
-      Creates a menu of folders or files
+      Creates a menu based on items in a file or directory
 
       .DESCRIPTION
-      Looks at the folder shows a list of numbered options based on the items in the folder.  
-      By default it shows folders, but you can pass a "a" and get a list of files
+      Checks for the menu.csv file and displays the contents as a menu. If the file does not exist, it looks in the local directory and returns a menu based on the folders or files.  
+      By default it shows files, but you can pass a "Folders" and get a list of folders
 
       .EXAMPLE
       Show-DynamicMenu
-      Shows Menu base on the Directories in the current locations
+      Shows a menu based on the menu.csv file if it exists, otherwise, it shows a menu base on the files in the current directory
+
+      .EXAMPLE
+      Show-DynamicMenu -Folders
+      Shows Menu base on the folders in the current directory
+ 
+      .EXAMPLE
+      Show-DynamicMenu -inputFile .\test2.csv
+      If you want to change the input filename from menu.csv
+      Shows Menu base on the files in the file.
+      The file must have "Name" as the title of the column. ("Name" must be on the first line)
+      
+      File Format:       Output Format:
+      Name               0. Exit
+      Move               1. Move
+      Delete             2. Delete
+      Select number: 
+
 
       .NOTES
-      Handly way to provide a selection if you want to have a menu that needs to be dynamic
+      Handly way to provide a selection if you want to have a menu that needs to be dynamic.  
+      When you need to modify something in the directory which changes regularly.
+      Or you don't want to rebuild a menu.
 
       .INPUTS
-      A - To get a menu of files
+      looks for "menu.csv" file first
 
       .OUTPUTS
       Passes or prints the selection of the menu as a name
   #>
+  [CmdletBinding()]
   param
   (
-    [Parameter(Mandatory=$false)]
-    [string]$ChildItemMode = 'D'
+    [switch]$Folders,
+    [Switch]$Files,
+    [String]$inputFile = "$env:HOMEDRIVE\temp\menu.csv"
   )
-  
-  
-  function Optimize-List
-  {
-    param
-    (
-      [Parameter(Mandatory=$true, ValueFromPipeline=$true, HelpMessage='Data to filter')]
-      $InputObject
-    )
-    process
+    
+  if (Test-Path -Path $inputFile){
+    $DirectoryItems = Import-Csv -Path $inputFile
+    Write-Debug -Message ("Txt File True - `n{0}" -f $DirectoryItems)
+  }
+  Else{  
+    if($Folders)
     {
-      if ($InputObject.mode -match $ChildItemMode)
-      {
-        $InputObject
-      }
+      $DirectoryItems = Get-ChildItem -Directory 
+      Write-Debug -Message ("Folders Switch True - `n{0}" -f $DirectoryItems)
+    }
+    Else{
+      $DirectoryItems = Get-ChildItem -file
+      Write-Debug -Message ("Files switch True - `n{0}" -f $DirectoryItems)
     }
   }
-  $DirectoryItems = Get-ChildItem | Optimize-List
   $menu = @{}
   $folderCount = $DirectoryItems.Count-1
   for($i = 0;$i -lt $DirectoryItems.count;$i++)
@@ -58,13 +77,26 @@ Function Show-DynamicMenu
   }
   $ans = 99
   do{[int]$ans = Read-Host -Prompt 'Select number'
-    if($ans -ge $folderCount )
+    if($ans -ne 0)
     {
-      Write-Host ('Select a number {0} or below' -f $folderCount)
+      if(($ans -ge $folderCount) -or ($ans -lt 0))
+      {
+        Write-Warning -Message ('Select a number from 0 to {0}' -f $folderCount)
+      }
     }
-  } while($ans -notin 0..$folderCount)
+  } 
+  while($ans -notin 0..$folderCount)
+ 
   $selection = $menu.Item($ans)
-  
+   <###################
+     Run Amazing code by passing $selection to the next function
+     
+     Return $selection
+  ###################>
+   
   # Visual output for Testing
-  Write-host 'You selected: '$selection -ForegroundColor Magenta
+  Write-Host 'You selected: '$selection -ForegroundColor Magenta
+    
+
 }
+Show-DynamicMenu
