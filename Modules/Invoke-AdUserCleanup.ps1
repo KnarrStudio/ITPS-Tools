@@ -59,14 +59,16 @@ function invoke-AdUserDelete{
     [String]$ServerName = 'localhost'
   )
   
-  [CmdletBinding(SupportsShouldProcess)]
-  param([Parameter(Mandatory=$true)]$DaysBack)
+
+  param(
+  [Parameter(Mandatory)]$DaysBack
+  )
  
-  $DisabledUsers = Search-ADAccount -AccountInactive -UsersOnly -TimeSpan "$DaysBack.00:00:0"
-  $DisabledUsers| ForEach-Object {
+  $DisabledUsers = Search-ADAccount -AccountDisabled -UsersOnly -TimeSpan "$DaysBack.00:00:0"
+  $DisabledUsers | ForEach-Object {
     if ($PSCmdlet.ShouldProcess($_.Name,'Remove')) {
       $_ | Remove-AdUser -Confirm:$false
-    }
+    } # End - if($PSCmdlet.ShouldProcess
   }
 }
 
@@ -82,4 +84,4 @@ function invoke-AdUserDelete{
     
     $DisabledUsers = Search-ADAccount -AccountInactive -UsersOnly -TimeSpan "$DaysBack.00:00:0"
 $DisabledUsers | Delete-AdUser -Confirm:$True#>
-}# End - function invoke-AdUserDelete
+# End - function invoke-AdUserDelete
