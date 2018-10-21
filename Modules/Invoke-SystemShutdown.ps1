@@ -24,14 +24,14 @@
          List of output types produced by this function.
    #>
    param(
-      [Parameter(Mandatory,HelpMessage='Type of Shutdown.  Full= All VMs and Hosts, Partial = Only ones tagged, Test = None, but runs script)The Host to move VMs FROM')]
-      [ValidatePattern(Full, Partial, Test)]
+      [Parameter(Mandatory,HelpMessage='Full= All VMs and Hosts, Partial = Only ones tagged. Test = None')]
+      [ValidateSet('Full', 'Partial', 'Test')]
       [string]$ShutdownType
    ) # End - Invoke-SystemShutdown param
+   
    Begin{
-      $ServerList = .\ServerList.csv  ## List of servers in order of shutdown (Name,Order)
-      $LogFileOutput = .\LogFileOutput.log ## File to write to as this script runs
-      Clear-Host
+      $ServerList = "$env:HOMEDRIVE\Temp\ServerList.csv"  ## List of servers in order of shutdown (Name,Order,SpecialTask)
+      $LogFileOutput = "$env:HOMEDRIVE\Temp\LogFileOutput.log" ## File to write to as this script runs
       $ShutDownArgreement = "$env:HOMEDRIVE\temp\ShutDownArgreement" ## File holds information and steps for the shutdown process
   
   
@@ -51,6 +51,7 @@
          } # End - Switch-Safety
       }
    } # End - Begin Block
+   
    Process {
       function Set-ServerService{
          <#
@@ -78,31 +79,33 @@
                List of output types produced by this function.
          #>
 
-
          [CmdletBinding()]
          param([string]$ServiceName = 'DFSR',
-            [string]$ServerName = 'iorunc-filesvr'
+            [string]$ServerName = 'iorunc-filesvr',
+            [string]$ShutdownType = 'Test'#,
+            #$LogFileOutput = "$env:HOMEDRIVE\temp\ErrorLogFile.txt"
          )
          
-         $a = Get-Service -ComputerName $ServerName -Name $ServiceName #-DependentServices
-         $b = 'N'
-         if ($a.Status -eq 'Stopped'){
-            Write-Host 'DFS Replication Service is Off.... '
-            $b = Read-Host -Prompt 'Do you want to start it? [N]'
-            if($b -eq 'Y'){
-               Write-Host 'Starting Service...' -BackgroundColor Green
+         $ServiceStatus = Get-Service -ComputerName $ServerName -Name $ServiceName
+
+         if ($ServiceStatus.Status -eq 'Stopped'){
+            Write-Output -InputObject 'DFS Replication Service is Off.... ' | Out-File -FilePath $LogFileOutput -Append
+            if($ShutdownType -ne 'Test'){
+               Write-Verbose -Message 'Starting Service...' 
+               Write-Output  -InputObject 'Starting Service...' | Out-File -FilePath $LogFileOutput -Append
                Set-Service -ComputerName $ServerName -Name $ServiceName -Status Running -StartupType Automatic
  
          }}
  
-         if ($a.Status -eq 'Running'){
-            Write-Host 'DFS Replication Service is On....'
-            $b = Read-Host -Prompt 'Do you want to stop it? [N]'
-            if($b -eq 'Y'){
-               Write-Host 'Stopping Service...' -BackgroundColor Red
+         if ($ServiceStatus.Status -eq 'Running'){
+            Write-Verbose -Message 'DFS Replication Service is On....'
+            #$b = Read-Host -Prompt 'Do you want to stop it? [N]'
+            if($ShutdownType -ne 'Test'){
+               Write-Verbose -Message 'Stopping Service...'
+               Write-Output  -InputObject 'Stopping Service...' | Out-File -FilePath $LogFileOutput -Append
                Get-Service -ComputerName $ServerName -Name $ServiceName | Stop-Service -Force 
-            
-         }}
+            }
+         }
          Get-Service -ComputerName $ServerName -Name $ServiceName | Select-Object -Property Status,Name
       }
 
@@ -134,17 +137,18 @@
          [CmdletBinding()]
          param(
          )
-         $HighlightTextColor = 'Yellow'
+         
          $ListBorder = '============================='
-         $Snapshotinfo = get-vm | get-snapshot  | Sort-Object -Property Created,SizeGB -Descending | Select-Object -Property VM,Name,Created,@{n='SizeGb'
-         e={'{0:N2}' -f $_.SizeGb}}#, id -AutoSize
+         
+         $Snapshotinfo = get-vm | get-snapshot | Select-Object -Property VM,Name,Created,@{n='SizeGb';e={'{0:N2}' -f $_.SizeGb}}#, id -AutoSize
          If ($Snapshotinfo.count -ne 0){
-            Write-Host `n "Snapshot information of all VM's in our vsphere." -foreground $HighlightTextColor -BackgroundColor Black
-            Write-Host $ListBorder -foregroundcolor $HighlightTextColor
-            $Snapshotinfo  | Select-Object -Property *
-            Write-Host $ListBorder -foregroundcolor $HighlightTextColor
+            Write-Verbose -Message "Snapshot information of all VM's in our vsphere."
+            Write-Verbose -Message $ListBorder
+            $Snapshotinfo  | Sort-Object -Property Created,SizeGB -Descending
+            Write-Verbose -Message $ListBorder
          }
-  
+         # ADD - Create Snapshots
+         
       }
 
       function Copy-ImportantVMs(){
@@ -172,12 +176,12 @@
                .OUTPUTS
                List of output types produced by this function.
          #>
-
-
+         
          [CmdletBinding()]
          param(
          )
-      
+         # Po'Boy backup for the shutdown.  These servers are identified in the cvs file and tagged.
+         
       }
 
       function Move-VmToOneHost(){
@@ -205,7 +209,6 @@
                .OUTPUTS
                List of output types produced by this function.
          #>
-
 
          [CmdletBinding()]
          param(
@@ -238,17 +241,49 @@
                .OUTPUTS
                List of output types produced by this function.
          #>
-
-
+         
          [CmdletBinding()]
          param(
       
          )
-      
       }
 
+      function Stop-Hosts{
+         <#
+               .SYNOPSIS
+               Describe purpose of "Stop-Hosts" in 1-2 sentences.
+
+               .DESCRIPTION
+               Add a more complete description of what the function does.
+
+               .EXAMPLE
+               Stop-Hosts
+               Describe what this call does
+
+               .NOTES
+               Place additional notes here.
+
+            .LINK
+            URLs to related sites
+            The first link is opened by Get-Help -Online Stop-Hosts
+
+            .INPUTS
+            List of input types that are accepted by this function.
+
+            .OUTPUTS
+            List of output types produced by this function.
+         #>
+
+
+         # ADD - Shutdown Hosts that have been identified.
+      
+      }
+      
    } # End - Process Block
    End {
+   
+      # Final logging and clean-up of open files.
+   
    
    } # End - End Block
 
