@@ -6,31 +6,33 @@ function Reboot-VmHosts {
     This script will move all the hosts from one server and reboot it.
     .DESCRIPTION
     <A detailed description of the script>
-    .PARAMETER -Source
+    .PARAMETER -FirstHost
     Host to move servers from.  The first host to reboot
-    .PARAMETER -Destination
-    Host to move servers to.  If the "rebootBoth" switch is passed, it will be the second to reboot
-    .PARAMETER -rebootBoth
+    .PARAMETER -LastHost
+    Host to move servers to.  If the "rebootAll" switch is passed, it will be the last to reboot
+    .PARAMETER -rebootAll
     Select this to reboot both hosts
     .PARAMETER -nameLog
     For logging
     .EXAMPLE
-    Reboot-VmHosts -Source "192.16.0.18" -Destination "192.16.0.19" -rebootBoth -nameLog   
+    Reboot-VmHosts -FirstHost "192.16.0.18" -LastHost "192.16.0.19" -rebootAll -nameLog   
 #>
 	[CmdletBinding(SupportsShouldProcess=$true,ConfirmImpact='Low')]
 	param(
 		[Parameter(Mandatory=$true, ValueFromPipeline=$true,
 			ValueFromPipelineByPropertyName=$true)]
-		[Alias('Source')]
+		[Alias('FirstHost')]
 		[ValidateLength(8,16)]
-		[string]$SourceVmHost,
-		[Parameter(Mandatory=$true)][Alias('Destination')]
+		[string[]]$FirstHostToReboot,
+		[Parameter(Mandatory=$true)][Alias('LastHost')]
 		[ValidateLength(8,16)]
-		[string]$DestVmHost,
-		[switch]$rebootBoth,
+		[string]$LastHostToReboot,
+		[switch]$rebootAll,
 		[switch]$nameLog
 	)
 	BEGIN{
+        $VmHosts = Get-VmHost
+        $HostCount = $VmHosts.count
 		if ($nameLog){
 			Write-Verbose -Message 'Finding name log file'
 			$i = 0
@@ -45,54 +47,54 @@ function Reboot-VmHosts {
 	}
 	PROCESS{
 		$i = 0
-		if ($rebootBoth){
-			$i = 2
+		if ($rebootAll){
+			$i = $HostCount
 		}
 		do{
 			$i++
-			if($i -eq 2){
-				$tempHost = $SourceVmHost
-				$SourceVmHost = $DestVmHost
-				$DestVmHost = $tempHost
+			if($i -eq $HostCount){
+				$tempHost = $FirstHostToReboot
+				$FirstHostToReboot = $LastHostToReboot
+				$LastHostToReboot = $tempHost
 			}
 
 			Write-Debug -Message 'Starting Process'
-			if($PSCmdlet.ShouldProcess($SourceVmHost)){
-				Write-Verbose -Message ('Connecting to {0}' -f $SourceVmHost)
+			if($PSCmdlet.ShouldProcess($FirstHostToReboot)){
+				Write-Verbose -Message ('Connecting to {0}' -f $FirstHostToReboot)
 				if($nameLog){
-					$SourceVmHost | Out-File -FilePath $logfile -Append
+					$FirstHostToReboot | Out-File -FilePath $logfile -Append
 				}
 				try {
 					$continue = $true
 					do{
-						$servers = get-vm | Where-Object {$_.vmhost.name -eq $SourceVmHost}
+						$servers = get-vm | Where-Object {$_.vmhost.name -eq $FirstHostToReboot}
 						foreach($server in $servers){
-							Write-Verbose -Message ('Moving {0} from {1} to {2}' -f $server, $SourceVmHost, $DestVmHost)
-							move-vm $SourceVmHosts -Destination $DestVmHosts
+							Write-Verbose -Message ('Moving {0} from {1} to {2}' -f $server, $FirstHostToReboot, $LastHostToReboot)
+							move-vm $FirstHostToReboots -LastHost $LastHostToReboots
 						}
-					}while((get-vm | Where-Object {$_.vmhost.name -eq $SourceVmHost}).count -ne 0)
+					}while((get-vm | Where-Object {$_.vmhost.name -eq $FirstHostToReboot}).count -ne 0)
 
-					if((get-vm | Where-Object {$_.vmhost.name -eq $SourceVmHost}).count -eq 0){
-						Set-VMHost $SourceVmHost -State Maintenance | Out-Null
-						Restart-vmhost $SourceVmHost -confirm:$false | Out-Null 
+					if((get-vm | Where-Object {$_.vmhost.name -eq $FirstHostToReboot}).count -eq 0){
+						Set-VMHost $FirstHostToReboot -State Maintenance | Out-Null
+						Restart-vmhost $FirstHostToReboot -confirm:$false | Out-Null 
 					}
 					do {Start-Sleep -Seconds 15
-						$ServerState = (get-vmhost $SourceVmHost).ConnectionState
-						Write-Verbose -Message ('Shutting Down {0}' -f $SourceVmHost)
+						$ServerState = (get-vmhost $FirstHostToReboot).ConnectionState
+						Write-Verbose -Message ('Shutting Down {0}' -f $FirstHostToReboot)
 					} while ($ServerState -ne 'NotResponding')
-					Write-Verbose -Message ('{0} is Down' -f $SourceVmHost)
+					Write-Verbose -Message ('{0} is Down' -f $FirstHostToReboot)
 
 					do {Start-Sleep -Seconds 15
-						$ServerState = (get-vmhost $SourceVmHost).ConnectionState
+						$ServerState = (get-vmhost $FirstHostToReboot).ConnectionState
 						Write-Verbose -Message 'Waiting for Reboot ...'
 					} while($ServerState -ne 'Maintenance')
-					Write-Verbose -Message ('{0} back online' -f $SourceVmHost)
-					Set-VMHost $SourceVmHost -State Connected | Out-Null 
+					Write-Verbose -Message ('{0} back online' -f $FirstHostToReboot)
+					Set-VMHost $FirstHostToReboot -State Connected | Out-Null 
 
 				}
 				catch {
 					$continue = $false
-					$SourceVmHost | Out-File -FilePath '.\error.txt'
+					$FirstHostToReboot | Out-File -FilePath '.\error.txt'
 					#$myErr | Out-File '.\errormessages.txt'
 				}
 			}
