@@ -1,0 +1,5 @@
+Name,Datatype,DriverName,KeepPrintedJobs,Location,PortName,PortAddress,PrintProcessor,Priority,Published,Shared,ShareName
+testprinter34,RAW,Microsoft Print To PDF,FALSE,AV34,3.34_TestPrinter,192.168.3.34,winprint,1,FALSE,FALSE,Test-Printer_34
+testprinter35,RAW,Microsoft Print To PDF,,AV34,3.35_TestPrinter,192.168.3.35,winprint,,,,Test-Printer_35
+testprinter36,RAW,Microsoft Print To PDF,,AV329,3.36_TestPrinter,192.168.3.36,winprint,,,,Test-Printer_36
+testprinter37,RAW,Microsoft Print To PDF,,AV29,3.37_TestPrinter,192.168.3.37,winprint,,,,Test-Printer_37
