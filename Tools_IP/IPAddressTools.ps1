@@ -156,15 +156,25 @@ while ($i -lt ([int]$t[3]+16))
 ##################
 
 
+
+
+$GoodHostIpAddress = '70.160.25.172'
+$IpAddressDot = '.'
+$GoodHostDnsName = 'knarrstudio.com'
+$BadHostIPAddress = '192.168.0.3'
+$ErrorActionPreference = 'Continue'
+
+
+
 Resolve-DnsName -QuickTimeout $GoodHostIpAddress
 Resolve-DnsName -QuickTimeout $BadHostIPAddress
 (Resolve-DnsName -QuickTimeout $BadHostIPAddress) | Test-NetConnection
 Test-NetConnection -ComputerName '192.168.0.1'
-Resolve-DnsName -Name $GoodHostDnsName -Server 9.9.9.9 -Type A
-Get-NetRoute -Protocol Local -DestinationPrefix 192.168*
-Get-NetAdapter -Name wi-fi | Get-NetRoute
+#Resolve-DnsName -Name $GoodHostDnsName -Server 9.9.9.9 -Type A
+#Get-NetRoute -Protocol Local -DestinationPrefix 192.168*
+#Get-NetAdapter -Name wi-fi | Get-NetRoute
 Test-NetConnection -ComputerName $GoodHostDnsName -TraceRoute
-Get-NetTCPConnection | Where-Object state -EQ Established
+#Get-NetTCPConnection | Where-Object state -EQ Established
 
 $masklength = (Get-NetIPAddress -InterfaceIndex 9 | ? AddressFamily -eq ipv4).PrefixLength
 $ip.Address = ([uint32]::MaxValue -1)-shl (32 -$masklength) -shr (32 - $masklength)
