@@ -1,7 +1,5 @@
 ﻿#Requires -Version 3
 
-#requires -version 3
-
 <#
       .SYNOPSIS
       Use it to "work" with IP information, find subnet starting IP, ping for available addresses or find addresses in use.
@@ -47,10 +45,10 @@
 #----------------------[Initialisations]--------------------------------------------------------
 
 #Set Error Action to Silently Continue
-$GoodHostIpAddress = '192.168.0.7'
+$GoodHostIpAddress = '192.168.1.7'
 $IpAddressDot = '.'
 $GoodHostDnsName = 'microsoft.com'
-$BadHostIPAddress = '192.168.0.3'
+$BadHostIPAddress = '192.168.1.3'
 $ErrorActionPreference = 'SilentlyContinue'
 
 #Dot Source required Function Libraries
@@ -152,7 +150,8 @@ do {
    $i++
    $IpAddressToTest
 } 
-while ($i -lt ([int]$t[3]+16))
+while ($i -lt ([int]$t[3]+16)) 
+
 ##################
 
 
@@ -161,7 +160,7 @@ while ($i -lt ([int]$t[3]+16))
 $GoodHostIpAddress = '70.160.25.172'
 $IpAddressDot = '.'
 $GoodHostDnsName = 'knarrstudio.com'
-$BadHostIPAddress = '192.168.0.3'
+$BadHostIPAddress = '192.168.1.3'
 $ErrorActionPreference = 'Continue'
 
 
@@ -169,7 +168,7 @@ $ErrorActionPreference = 'Continue'
 Resolve-DnsName -QuickTimeout $GoodHostIpAddress
 Resolve-DnsName -QuickTimeout $BadHostIPAddress
 (Resolve-DnsName -QuickTimeout $BadHostIPAddress) | Test-NetConnection
-Test-NetConnection -ComputerName '192.168.0.1'
+Test-NetConnection -ComputerName '192.168.1.1'
 #Resolve-DnsName -Name $GoodHostDnsName -Server 9.9.9.9 -Type A
 #Get-NetRoute -Protocol Local -DestinationPrefix 192.168*
 #Get-NetAdapter -Name wi-fi | Get-NetRoute
