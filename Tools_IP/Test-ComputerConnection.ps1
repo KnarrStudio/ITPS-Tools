@@ -1,18 +1,27 @@
-﻿$WorkstationList = Import-Csv -Path $env:HOMEDRIVE\Temp\SiteList.csv -Header Name
+
 $GoodCount = $BadCount = 0
-$DateNow = Get-Date -UFormat %Y-%m-%d
+$DateNow = Get-Date -UFormat %Y%m%d-%H%M
 $ReportFile = ("$env:HOMEDRIVE\temp\{0}-Report.txt" -f $DateNow)
 
+
+if(!(Test-Path "$env:HOMEDRIVE\Temp\SiteList.csv")){
+    $ADSearchBase = 'OU=Clients-Desktop,OU=Computers,OU=SOUTH,OU=OMC,OU=OSD,OU=Enterprise Tenants,DC=usr,DC=osd,DC=mil'
+    get-adcomputer -filter * -SearchBase $ADSearchBase | select name | Export-Csv -Path "$env:HOMEDRIVE\Temp\SiteList.csv" -NoTypeInformation
+    }
+
+$WorkstationList = Import-Csv -Path "$env:HOMEDRIVE\Temp\SiteList.csv" -Header Name
+
 foreach($OneWorkstation in $WorkstationList){
-
-   $t = Test-Connection -ComputerName $OneWorkstation.Name -Count 1 -Quiet
-   if($t -ne 'True'){
-      $BadCount =+ 1
-
-      $OneWorkstation.Name | Out-File -FilePath $ReportFile -NoClobber -Append
-   }
-   else{
-      $GoodCount += 1
-   }
+   $WorkstationName = $OneWorkstation.Name
+   $Ping = Test-Connection $WorkstationName -Count 1 -Quiet
+if($Ping -ne 'True'){
+    $BadCount += 1
+    $WorkstationProperties = Get-ADComputer -Identity $WorkstationName -Properties * | Select Name,LastLogonDate,Description
+    if($BadCount -eq 1){
+        $WorkstationProperties | export-csv $ReportFile -NoClobber -NoTypeInformation
+    }
+    else{
+        $WorkstationProperties | Export-Csv $ReportFile -NoTypeInformation -Append
+        }
+    }
 }
- 
