@@ -5,7 +5,7 @@ $ReportFile = ("$env:HOMEDRIVE\temp\{0}-Report.txt" -f $DateNow)
 
 
 if(!(Test-Path "$env:HOMEDRIVE\Temp\SiteList.csv")){
-    $ADSearchBase = 'OU=Clients-Desktop,OU=Computers,OU=SOUTH,OU=OMC,OU=OSD,OU=Enterprise Tenants,DC=usr,DC=osd,DC=mil'
+    $ADSearchBase = 'OU=Clients-Desktop,OU=Computers,OU=SOUTH,DC=localdomain'
     get-adcomputer -filter * -SearchBase $ADSearchBase | select name | Export-Csv -Path "$env:HOMEDRIVE\Temp\SiteList.csv" -NoTypeInformation
     }
 
