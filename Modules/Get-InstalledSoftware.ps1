@@ -2,23 +2,24 @@
 
 <#
     .SYNOPSIS
-    Find the installed software on a Windows Compter
+    Report of the installed software on a Windows Compter
 
     .DESCRIPTION
-    Lists all of the software in the system's "uninstall" Registry path
+    Creates a Report of the software in the Windows system's "uninstall" Registry path
 
     .OUTPUTS
-    Log file stored in C:\Windows\Temp\InstalledSoftware.log
-
-    .NOTES
-    Version:        1.0
-    Author:         Arnesen
-    Creation Date:  3/6/2018
-    Purpose/Change: Initial script development
-  
+    The report file stored in C:\Windows\Temp\InstalledSoftware.log
+    
     .EXAMPLE
     <Example goes here. Repeat this attribute for more than one example>
-#>
+    
+    .NOTES
+    Author:         
+    Editors:    Arnesen
+    Creation Date:  3/6/2018
+    GitHub Location: ITPS-Tools/Modules/Get-InstalledSoftware.ps1
+ 
+ #>
 
 #----------------------[ Initializations ]--------------------------------------------------------
 
