@@ -16,24 +16,26 @@ The idea behind these tools are as follows:
     
 - ### Templates:
   All scripts, modules and functions need to use the template, so that others who run accross the script can find source and possible updates.
-      <#
-    .SYNOPSIS
-    Quick blurb about the script 
+```
+          <#
+         .SYNOPSIS
+          Quick blurb about the script 
 
-    .DESCRIPTION
-    Use this for larger scripts that need more details.  Just use the SYNOPSIS for short scripts
+        .DESCRIPTION
+        Use this for larger scripts that need more details.  Just use the SYNOPSIS for short scripts
 
-    .OUTPUTS
-    Discribe the way you will get the output.  Screen, Console, or file and location
-    
-    .EXAMPLE
-    <Example goes here. Repeat this attribute for more than one example>
-    
-    .NOTES
-    Author:         
-    Editors:    Arnesen
-    Last Edit Date:  3/6/2018
-    GitHub Location: ITPS-Tools/Modules/Get-InstalledSoftware.ps1
- #>
+        .OUTPUTS
+        Discribe the way you will get the output.  Screen, Console, or file and location
+ 
+        .EXAMPLE
+        <Example goes here. Repeat this attribute for more than one example>
+ 
+        .NOTES
+        Author:         Your Name - Take credit if it is yours, give credit if it was isn't
+        Editors:    Your Namme - Take the credit
+        Last Edit Date:  3/6/2018
+        GitHub Location: ITPS-Tools/Modules/Get-InstalledSoftware.ps1
+        #>
+```
     
     
