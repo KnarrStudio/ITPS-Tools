@@ -6,6 +6,7 @@ $menu = Get-Content .\Menu.txt
 # Imports the menu module
 import-module .\show-mainmenu.psm1
 
+
 # Call the function in the module using the variable $menu, but could be "item1",'item2','item3' obviously, the latter does not scale well 
 # The next can only be done becuse create-menu is a function in the show-mainmenu module
 Create-Menu -Title 'Welcome to the Maintenance Center' -MenuItems $menu -TitleColor Red -LineColor Cyan -MenuItemColor Yellow

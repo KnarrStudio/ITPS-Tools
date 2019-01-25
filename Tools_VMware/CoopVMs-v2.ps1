@@ -143,7 +143,6 @@ If ($OkRemove -eq "Y"){
 }}}
 }
 
-
 Function Create-COOPs {
 
 if ($COOPprocess -eq "3"){Clear-Host}
@@ -194,12 +193,6 @@ New-vm -name $COOPPrefix$($server) -vm $server -datastore $DataStoreStore -VMHos
 }
 Default {Write-Host "Exit"}
 }}
-
-
-
-
-
-
 
 # -------------------- Begin Script -----------------------
 $WhatIfPreference = $true #This is a safety measure that I am working on.  My scripts will have a safety mode, or punch the monkey to actually execute.  You can thank Phil West for this idea, when he removed all of the printers on the print server when he double-clicked on a vbs script.
