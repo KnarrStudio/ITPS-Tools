@@ -102,7 +102,9 @@ If ($COOPSinuse.count -ne 0){
     Write-Host "=============================" -foregroundcolor Red
     Write-Host -sep `n 
     }
-$Snapshotinfo = get-vm | get-snapshot  | Sort-Object Created,SizeGB -Desc | Format-Table -Property VM,Name,Created,@{n="SizeGb";e={"{0:N2}" -f $_.SizeGb}}#, id -AutoSize
+$Snapshotinfo = get-vm | get-snapshot  | 
+    Sort-Object Created,SizeGB -Desc | 
+    Format-Table -Property VM,Name,Created,@{n="SizeGb";e={"{0:N2}" -f $_.SizeGb}}#, id -AutoSize
 If ($Snapshotinfo.count -ne 0){
     Write-Host `n "Snapshot information of all VM's in our vsphere." -foreground Yellow -BackgroundColor Black
     Write-Host "=============================" -foregroundcolor Yellow
