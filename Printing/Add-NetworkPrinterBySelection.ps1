@@ -17,7 +17,7 @@ function Add-NetworkPrinter
          Place additional notes here.
    #>
 
-
+   [cmdletbinding()]
    
    param
    (
@@ -31,19 +31,26 @@ function Add-NetworkPrinter
       #Import-Module -Name PrintManagement
    }
    Write-Verbose -Message 'Print Management Module Imported'
+  
+
+   if(Test-Connection -ComputerName $PrintServer -Count  -Quiet)
+   {
+      $PrinterSelection = get-printer -ComputerName $PrintServer | Select-Object -Property Name, DriverName,PortName | Out-GridView -PassThru
+      Write-Verbose -Message ('Printer Selected {0}' -f $PrinterSelection)
    
-   [CmdletBinding()]
-         
-   $PrinterSelection = get-printer -ComputerName $PrintServer | Select-Object -Property Name, DriverName,PortName | Out-GridView -PassThru
-   Write-Verbose -Message ('Printer Selected {0}' -f $PrinterSelection)
+      $PrinterName = $PrinterSelection.name
+      Write-Verbose -Message ('Pritner Name {0}' -f $PrinterName)
    
-   $PrinterName = $PrinterSelection.name
-   Write-Verbose -Message ('Pritner Name {0}' -f $PrinterName)
-   
-   Add-Printer -ConnectionName "\\$PrintServer\$PrinterName"  -WhatIf
-   Write-Verbose -Message 'Printer Connected'
-   
+      #$PrintServer = 'test'
+      Add-Printer -ConnectionName "\\$PrintServer\$PrinterName"  -WhatIf
+      Write-Verbose -Message ('Printer Connected \\{0}\{1}' -f $PrintServer, $PrinterName)
+   }
+   else
+   {
+      Write-Warning -Message "Unable to connect to $PrintServer."
+   }
+
 }
 
 
-#Add-NetworkPrinter -PrintServer
+#Add-NetworkPrinter -PrintServer 
