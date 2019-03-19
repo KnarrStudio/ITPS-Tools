@@ -84,7 +84,7 @@ function get-LocalActiveIpAddress {
   
    Process{
       Try{            
-         $AllNetworkAdaptors = Get-NetAdapter | Where-Object Status -ne Up
+         $AllNetworkAdaptors = Get-NetAdapter | Where-Object Status -eq Up
          if($AllNetworkAdaptors.count -ge 1){
             foreach($CurrentAdaptor in $AllNetworkAdaptors){
                $CurrentAdaptorStats = Get-NetAdapterStatistics -Name $CurrentAdaptor
@@ -143,7 +143,8 @@ do {
    $IpAddressToTest = ('{0}.{1}' -f $ipadd, $i)
    # "$ipadd.$i"
       
-   if(!(Test-NetConnection -ComputerName $IpAddressToTest -CommonTCPPort Get-WmiObject -Class win32_pingstatus -Filter ("Address='{0}' and timeout=3000 and timetolive=255" -f $IpAddressToTest)).StatusCode -eq 11010)
+   if(!(Test-Connection $IpAddressToTest )) -CommonTCPPort HTTP
+   #Get-WmiObject -Class win32_pingstatus -Filter ("Address='{0}' and timeout=3000 and timetolive=255" -f $IpAddressToTest)).StatusCode -eq 11010)
    { 
       ('{0} Free!' -f $IpAddressToTest)
    } 
@@ -175,7 +176,7 @@ Test-NetConnection -ComputerName '192.168.1.1'
 Test-NetConnection -ComputerName $GoodHostDnsName -TraceRoute
 #Get-NetTCPConnection | Where-Object state -EQ Established
 
-$masklength = (Get-NetIPAddress -InterfaceIndex 9 | ? AddressFamily -eq ipv4).PrefixLength
+$masklength = (Get-NetIPAddress -InterfaceIndex 9 | Where-Object AddressFamily -eq ipv4).PrefixLength
 $ip.Address = ([uint32]::MaxValue -1)-shl (32 -$masklength) -shr (32 - $masklength)
 
 
