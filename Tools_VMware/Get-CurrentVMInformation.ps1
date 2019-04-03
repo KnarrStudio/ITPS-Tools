@@ -6,13 +6,33 @@ Function Get-VMInformation
   <#
       .SYNOPSIS
       Gives a quick status of the VM Environment
-      .EXAMPLE
+      
+	  .EXAMPLE
+      Get-CurrentVMInformation -Output File
+      Sends the Powered On Servers, Powered Off Servers, Servers that are running from the clone 'COOP' and snapshots to a file.
+      
+	  .EXAMPLE
+      Get-CurrentVMInformation -CloneBase COOP
+      Displays the Powered On and Off Servers, Servers that are running from a cloned machine that you named a with the "CloneBase" common name.  The default is "COOP', but it is whatever you use.
+      
+	  .EXAMPLE
       Get-CurrentVMInformation
       Displays the Powered On Servers, Powered Off Servers, Servers that are running from the clone 'COOP' and lists the snapshots
-      .OUTPUTS
+      
+	  .OUTPUTS
       Output to Console. 
 
   #>
+	[CmdletBinding(SupportsShouldProcess=$true,ConfirmImpact='Low')]
+  	Param
+	(
+	[Parameter(Mandatory, ValueFromPipeline, HelpMessage='Send Out to')]
+	  [ValidateSet('Screen','File')]
+	  [String]$Output = 'Screen',
+	[Parameter(Mandatory, ValueFromPipeline, HelpMessage='Base name of Clone.  The default is "COOP"')]
+	[String]$CloneBase = 'COOP'
+	)
+  
   function Get-VmWithPowerState
   {
     param
@@ -22,7 +42,8 @@ Function Get-VMInformation
       [Parameter(Mandatory, ValueFromPipeline, HelpMessage='Data to filter')]
       [ValidateSet('PoweredOn','PoweredOff')]
       [String]$PowerState
-    )
+	)
+	
     process
     {
       if($InputObject.PowerState -eq $PowerState)
@@ -33,18 +54,20 @@ Function Get-VMInformation
     }
   }
   $ALLvms = get-vm
-  $Snapshots = get-vm | get-snapshot
+  $Snapshots = $ALLvms | get-snapshot
   $null = Get-VMHost 
   $PoweredOffVM = $ALLvms | Get-VmWithPowerState -PowerState 'PoweredOff'
   $PoweredOnVM = $ALLvms | Get-VmWithPowerState -PowerState 'PoweredOn'
-  $COOPSinuse = $ALLvms | Where-Object {($_.Name -match 'COOP')} | Get-VmWithPowerState -PowerState 'PoweredOn'
+  #$ClonesInuse = $ALLvms | Where-Object {($_.Name -match $CloneBase)} | Get-VmWithPowerState -PowerState 'PoweredOn'
+  $ClonesInuse = $PoweredOnVM | Where-Object {($_.Name -match $CloneBase)}
   $Snapshotsinfo = $Snapshots | Sort-Object -Property Created,SizeGB -Descending
     
   Write-Host `n 
-  Write-Host ('List of Powered Off VMs: {0}' -f $PoweredOffVM) -ForegroundColor Red
+  Write-Host ('List of Powered Off VMs:') -ForegroundColor Red
+  Write-Host ($PoweredOffVM)
   Write-Host ('List of Powered ON Servers: {0}' -f $PoweredOnVM) -ForegroundColor Green
-  Write-Host ('List of COOPd Servers in use: {0}' -f $COOPSinuse) -ForegroundColor Blue
+  Write-Host ('List of Cloned Servers in use: {0}' -f $ClonesInuse) -ForegroundColor Blue
   Write-Host ('Snapshot Information: {0}' -f $Snapshotsinfo) -ForegroundColor Red
 }
 
-Get-VMInformation 
+#Get-VMInformation 

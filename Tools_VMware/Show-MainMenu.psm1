@@ -105,6 +105,6 @@
 }
 
 
-# CreateMenu -Title "THIS IS TITLE" -MenuItems "Exchange Server","Active Directory","Sytem Center Configuration Manager","Lync Server","Microsoft Azure" -TitleColor Red -LineColor Cyan -MenuItemColor Yellow
-# Create-Menu -Title 'Welcome to the Maintenance Center' -MenuItems 'Set Safety On/Off','EXIT',"Move all VM's to one host",'Reboot Empty host',"Balance all VM's per 'tag'",'Move and Reboot and Balance VM environment','VM/Host information','Exit' -TitleColor Red -LineColor Cyan -MenuItemColor Yellow
+#Create-Menu -Title "THIS IS TITLE" -MenuItems "Exchange Server","Active Directory","Sytem Center Configuration Manager","Lync Server","Microsoft Azure" -TitleColor Red -LineColor Cyan -MenuItemColor Yellow
+Create-Menu -Title 'Welcome to the Maintenance Center' -MenuItems 'Set Safety On/Off','EXIT',"Move all VM's to one host",'Reboot Empty host',"Balance all VM's per 'tag'",'Move and Reboot and Balance VM environment','VM/Host information','Exit' -TitleColor Red -LineColor Cyan -MenuItemColor Yellow
 
