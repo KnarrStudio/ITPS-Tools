@@ -1,51 +1,30 @@
-﻿function script:Create-Menu ([Parameter(Mandatory)]$Title,[Parameter(Mandatory)]$MenuItems,[Parameter(Mandatory)]$TitleColor,[Parameter(Mandatory)]$LineColor,[Parameter(Mandatory)]$MenuItemColor)
-{
-   <#
-         .SYNOPSIS
-         Describe purpose of "Create-Menu" in 1-2 sentences.
-
-         .DESCRIPTION
-         Add a more complete description of what the function does.
-
-         .PARAMETER Title
-         Describe parameter -Title.
-
-         .PARAMETER MenuItems
-         Describe parameter -MenuItems.
-
-         .PARAMETER TitleColor
-         Describe parameter -TitleColor.
-
-         .PARAMETER LineColor
-         Describe parameter -LineColor.
-
-         .PARAMETER MenuItemColor
-         Describe parameter -MenuItemColor.
-
-         .EXAMPLE
-         Create-Menu -Title Value -MenuItems Value -TitleColor Value -LineColor Value -MenuItemColor Value
-         Describe what this call does
-
-         .NOTES
-         Place additional notes here.
-
-         .LINK
-         URLs to related sites
-         The first link is opened by Get-Help -Online Create-Menu
-
-         .INPUTS
-         List of input types that are accepted by this function.
-
-         .OUTPUTS
-         List of output types produced by this function.
-   #>
+﻿function script:Create-Menu
+  {
 
 
-   Clear-Host
-   [string]$Title = "$Title"
+   
+  param
+  (
+    [Parameter(Mandatory)]
+    $Title,
+
+    [Parameter(Mandatory)]
+    $MenuItems,
+
+    [Parameter(Mandatory)]
+    $TitleColor,
+
+    [Parameter(Mandatory)]
+    $LineColor,
+
+    [Parameter(Mandatory)]
+    $MenuItemColor
+  )
+Clear-Host
+   [string]$Title = ('{0}' -f $Title)
    $TitleCount = $Title.Length
     $LongestMenuItem = ($MenuItems | Measure-Object -Maximum -Property Length).Maximum
- if  ($TitleCount -lt $LongestMenuItem)
+  if  ($TitleCount -lt $LongestMenuItem)
          {
          $reference = $LongestMenuItem
          }
@@ -55,7 +34,7 @@
    $reference = $reference + 40
    
    
-   $Line = "═"*$reference
+   $Line = '═'*$reference
    $TotalLineCount = $Line.Length
    $RemaniningCountForTitleLine = $reference - $TitleCount
    $RemaniningCountForTitleLineForEach = $RemaniningCountForTitleLine / 2
