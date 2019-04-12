@@ -1,5 +1,5 @@
 $ADSearchBase = 'OU=Clients-Desktop,OU=Computers,DC=Knarrstudio,DC=net'
-$PingReportFolder = '\\rsrcngmfs02\OMC-CA_Org\OMC-S\IT\Reports\PingReport'
+$PingReportFolder = '\\server\share\Reports\PingReport'
 $GoodCount = 0
 $BadCount = 0
 $DateNow = Get-Date -UFormat %Y%m%d-%H%M
