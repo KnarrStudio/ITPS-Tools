@@ -34,6 +34,7 @@ function Compare-Folders {
 
 
   Function Get-Recursed {
+    [CmdletBinding()]
     Param(
       [Alias('Source','OldFolder')]
       [string]$FolderPath
