@@ -13,8 +13,8 @@ Begin {
     {
       if($InputObject.InstalledOn -gt ((Get-Date).AddDays(-$DaysBack)))
       {
-        $InputObject
-      }
+$InputObject
+}
     }
   }
   function Find-Gateway 
@@ -28,20 +28,20 @@ Begin {
 
     if ($InputObject.DestinationPrefix -eq '0.0.0.0/0')
     {
-      $InputObject
-    }
+$InputObject
+}
   }
 
   Get-Module -Name NetAdapter, NetSecurity, NetTCPIP
   $Adaptors = Get-NetAdapter
   $Gateway = Get-NetRoute | Find-Gateway
   $r = Get-WmiObject -Class Win32_NetworkAdapterConfiguration -ComputerName 'LENOVA-11' | Where-Object -FilterScript {
-    $_.IPEnabled -eq $true -and $_.DHCPEnabled -eq $true
-  } 
+$_.IPEnabled -eq $true -and $_.DHCPEnabled -eq $true
+} 
 
   $NetworkAdapterConfiguration = Get-WmiObject -Class Win32_NetworkAdapterConfiguration -ComputerName $env:COMPUTERNAME | Where-Object -FilterScript {
-    $_.IPEnabled -eq $true -and $_.DHCPEnabled -eq $true
-  } 
+$_.IPEnabled -eq $true -and $_.DHCPEnabled -eq $true
+} 
   
   
 } # Begin Block
@@ -115,7 +115,7 @@ End {
   }
   else
   {
-    Write-Host 'No gateway' -ForegroundColor Red
-  }
+Write-Host 'No gateway' -ForegroundColor Red
+}
 
 } # End Block
