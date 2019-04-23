@@ -14,7 +14,7 @@ function Repair-FolderRedirection
       Repair-FolderRedirection -RemotePath 'H:\_MyComputer'
   #>
   
-  [CmdletBinding()]
+  [CmdletBinding(SupportsShouldProcess,ConfirmImpact = 'High')]
   [OutputType([int])]
   Param
   (
