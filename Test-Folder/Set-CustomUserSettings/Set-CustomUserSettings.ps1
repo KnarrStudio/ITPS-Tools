@@ -1,7 +1,7 @@
-﻿Import-DscResource -ModuleName 'PSDesiredStateConfiguration'
-
+﻿
 Configuration SetCustomUserSettings {
-
+  Import-DscResource -ModuleName 'PSDesiredStateConfiguration'
+  
   Node localhost {
 
     Registry CustomUserSettings {
