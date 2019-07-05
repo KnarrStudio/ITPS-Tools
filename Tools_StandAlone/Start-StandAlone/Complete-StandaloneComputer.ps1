@@ -1,22 +1,22 @@
 ﻿#Requires -RunAsAdministrator
 #Requires -Modules Microsoft.PowerShell.LocalAccounts
 
-    <#
-        .SYNOPSIS
-            This script is to help out with the building of the stand alone systems.
-            It should be able to do the following by the time it is completed.
+<#
+    .SYNOPSIS
+    This script is to help out with the building of the stand alone systems.
+    It should be able to do the following by the time it is completed.
 
-        .DESCRIPTION
-            1. Add new user[s] 
-            2. Add users to specific groups
-            3. Uninstall unneeded software
-            4. Build a standard folder structure that will be used for the care and feeding
-            5. Make registry changes as required by the function of the device *Later versions
+    .DESCRIPTION
+    1. Add new user[s] 
+    2. Add users to specific groups
+    3. Uninstall unneeded software
+    4. Build a standard folder structure that will be used for the care and feeding
+    5. Make registry changes as required by the function of the device *Later versions
 
-        .EXAMPLE
-          Complete-StandaloneComputer.ps1
+    .EXAMPLE
+    Complete-StandaloneComputer.ps1
 
-    #>
+#>
 
 
 
@@ -55,7 +55,7 @@ Begin{
   }
 
 
-# Variables
+  # Variables
   $NewGroups = 'OMC_Users'
   #$Password911 = Read-Host "Enter a 911 Password" -AsSecureString
   $PasswordUser = Read-Host -Prompt 'Enter a User Password' -AsSecureString
@@ -64,27 +64,26 @@ Begin{
   
 
 
-# House keeping
-function New-Folder
-{
-  <#
-      .SYNOPSIS
-      Add new folders with built in testing for existance.
+  # House keeping
+  function New-Folder
+  {
+    <#
+        .SYNOPSIS
+        Add new folders with built in testing for existance.
 
-  #>
-  param
-  (
-    [Parameter(Position = 0)]
-    [string] $NewFolder = "$env:HOMEDRIVE\temp\CyberUpdates"
-  )
+    #>
+    param
+    (
+      [Parameter(Position = 0)]
+      [string] $NewFolder = "$env:HOMEDRIVE\temp\CyberUpdates"
+    )
   
     If (-not (Test-Path -Path $_))
     {
       New-Item -Path $_ -ItemType Directory -Force 
       #Set-Acl 
     }
-
-}
+  }
   function Add-UsersAndGroups
   {
     <#
@@ -118,27 +117,63 @@ function New-Folder
     }
   }
 
-function Uninstall-Software
-{
-  <#
-    .SYNOPSIS
-    Short Description
-    .DESCRIPTION
-    Detailed Description
-    .EXAMPLE
-    Uninstall-Software
-    explains how to use the command
-    can be multiple lines
-    .EXAMPLE
-    Uninstall-Software
-    another example
-    can have as many examples as you like
+  function Uninstall-Software
+  {
+    <#
+        .SYNOPSIS
+        Short Description
+        .DESCRIPTION
+        Detailed Description
+        .EXAMPLE
+        Uninstall-Software
+        explains how to use the command
+        can be multiple lines
+        .EXAMPLE
+        Uninstall-Software
+        another example
+        can have as many examples as you like
 
-  Unistall software
+        Unistall software
     #>
-  $caInstalledSoftware = Get-ItemProperty -Path HKLM:\Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\* #| Select-Object DisplayName,UninstallString  -Last 10
-  $caInstalledSoftware 
-}
+
+    function Uninstall-Software
+    {
+      <#
+          .SYNOPSIS
+          Uninstall unneeded or unwanted software
+
+      #>
+      [CmdletBinding()]
+      param
+      (
+        [Parameter(Mandatory, Position = 0)]
+        [String]$SoftwareName
+      )
+  
+      $SoftwareList = (Get-ChildItem -Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall, HKLM:\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall  |
+        Get-ItemProperty | 
+        Where-Object -FilterScript {
+          $_.DisplayName -match $SoftwareName
+        } |
+      Select-Object -Property DisplayName, UninstallString)
+    
+
+      #$SoftwareList
+
+      ForEach ($App in $SoftwareList) 
+      {
+        #$App
+        #$App.UninstallString
+        If ($App.UninstallString) 
+        {
+          $uninst = ($App.UninstallString)
+          $uninst = $uninst.Replace('{',' ').Replace('}',' ')
+          Invoke-Expression -Command $uninst 
+          #Write-Host $uninst
+        }
+      }
+    }
+  }
  
  
   Function Set-WallPaper
