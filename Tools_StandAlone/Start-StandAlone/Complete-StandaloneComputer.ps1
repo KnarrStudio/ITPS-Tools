@@ -18,166 +18,182 @@
 
 #>
 
-
-
-
-
-
 # Add new users
-
 Begin{
-
   $NewUsers = @{
     OMCuser    = @{
       FullName            = 'OMC User'
       Description         = 'Standard local Account'
-      AccountGroup        = 'OMC_Users'
+      AccountGroup        = 'Users'
       AccountNeverExpires = $true
+      Password            = '1qaz@WSX3edc$RFV'
     }
-    AVuser     = @{
-      FullName            = 'AV User'
-      Description         = 'Standard AV Account'
-      AccountGroup        = 'OMC_Users'
-      AccountNeverExpires = $true
-    }
-    AVadmin    = @{
-      FullName            = 'AV Administrator'
-      Description         = 'AV Admin Account'
+    OMCAdmin   = @{
+      FullName            = 'OMC Admin'
+      Description         = 'Local Admin Account for IT'
       AccountGroup        = 'Administrators'
       AccountNeverExpires = $true
+      Password            = 'OMC@dm!nP@$$!!'
+    }
+    CRTech     = @{
+      FullName            = 'Court Room Tech User'
+      Description         = 'Standard Court Room Account'
+      AccountGroup        = 'Users'
+      AccountNeverExpires = $true
+      Password            = '1qaz@WSX3edc$RFV'
+    }
+    CRAdmin    = @{
+      FullName            = 'Court Room Administrator'
+      Description         = 'Court Room Admin Account'
+      AccountGroup        = 'Administrators'
+      AccountNeverExpires = $true
+      Password            = '1qaz@WSX3edc$RFV'
     }
     NineOneOne = @{
       FullName            = '911'
       Description         = 'Emergancy Access PW in "KeePass"'
       AccountGroup        = 'Administrators'
       AccountNeverExpires = $true
+      Password            = '1qaz@WSX3edc$RFV'
     }
   }
-
+  $NewFolderInfo = @{
+      CyberUpdates    = @{
+                    ItemType = 'Directory'
+                    FullPath = 'C:\CyberUpdates'
+                    Description         = 'Contains Monthly Updates and Scan Reports'
+                    ACLGroup        = 'Administrators'
+                    ACLControl = 'Full Control'
+                    ReadMeText = 'This is the working folder for the monthly updates and scanning.'
+                    ReadMeFile = 'README.TXT'
+    }
+    ScanReports    = @{
+                    ItemType = 'Directory'
+                    FullPath = 'C:\CyberUpdates\ScanReports'
+                    Description         = 'Contains Monthly Scan Reports'
+                    ACLGroup        = 'Administrators'
+                    ACLControl = 'Full Control'
+                    ReadMeText = 'This is where the "IA" scans engines and reports will be kept.'
+                    ReadMeFile = 'README.TXT'
+    }
+    
+    }
 
   # Variables
-  $NewGroups = 'OMC_Users'
-  #$Password911 = Read-Host "Enter a 911 Password" -AsSecureString
-  $PasswordUser = Read-Host -Prompt 'Enter a User Password' -AsSecureString
-  $CurrentUsers = Get-LocalUser
-  $CurrentGroups = Get-LocalGroup
+  $NewGroups = @('OMC_Users', 'OMC_Admins', 'TestGroup')
+  # $Password911 = Read-Host "Enter a 911 Password" -AsSecureString
+  #$PasswordUser = Read-Host -Prompt 'Enter a User Password' -AsSecureString
+  #$CurrentUsers = Get-LocalUser
+  #$CurrentGroups = Get-LocalGroup
   
-
-
   # House keeping
-  function New-Folder
-  {
-    <#
-        .SYNOPSIS
-        Add new folders with built in testing for existance.
-
-    #>
-    param
-    (
-      [Parameter(Position = 0)]
-      [string] $NewFolder = "$env:HOMEDRIVE\temp\CyberUpdates"
-    )
-  
-    If (-not (Test-Path -Path $_))
-    {
-      New-Item -Path $_ -ItemType Directory -Force 
-      #Set-Acl 
-    }
+  function New-Folder  {
+$NewFolderInfo = [ordered]@{
+  CyberUpdates = @{
+    ItemType    = 'Directory'
+    FullPath    = "$env:HOMEDRIVE\CyberUpdates"
+    Description = 'Contains Monthly Updates and Scan Reports'
+    ACLGroup    = 'Administrators'
+    ACLControl  = 'Full Control'
+    ReadMeText  = 'This is the working folder for the monthly updates and scanning.'
+    ReadMeFile  = 'README.TXT'
   }
-  function Add-UsersAndGroups
+  ScanReports  = @{
+    ItemType    = 'Directory'
+    FullPath    = "$env:HOMEDRIVE\CyberUpdates\ScanReports"
+    Description = 'Contains Monthly Scan Reports'
+    ACLGroup    = 'Administrators'
+    ACLControl  = 'Full Control'
+    ReadMeText  = 'This is where the "IA" scans engines and reports will be kept.'
+    ReadMeFile  = 'README.TXT'
+  }
+}
+
+
+foreach ($NewFolder in $NewFolderInfo.key)
+{
+  
+  $NewFolderPath = $NewFolderInfo.$NewFolder.FullPath
+    
+  If(-not (Test-Path -Path $NewFolderPath))
   {
+    New-Item -Path $NewFolderPath -ItemType Directory -Force
+  }
+}
+  }
+  function Add-UsersAndGroups  {
     <#
         .SYNOPSIS
         Short Description
-
     #>
-    foreach($NewGroup in $NewGroups)
+    ForEach($NewGroup in $NewGroups)
     {
-      If ($NewGroup -notin $CurrentGroups)
+      $GroupExists = Get-LocalGroup -Name $NewGroup -ErrorAction SilentlyContinue
+      if(-not $GroupExists)
       {
-        New-LocalGroup -Name $NewGroup -Description $NewGroups -WhatIf
+        New-LocalGroup -Name $NewGroup -Description $NewGroup -WhatIf
       }
     }
   
-    ForEach ($UserName in $NewUsers.Keys)
+    ForEach ($UserName in $NewUsers.Keys) 
     {
       $UserInfo = $NewUsers[$UserName]
-    
-      If ($UserName -notin $CurrentUsers)
+      $UserExists = Get-LocalUser -Name $UserName -ErrorAction SilentlyContinue
+
+      $SecurePassword = ConvertTo-SecureString -String ($UserInfo.Password) -AsPlainText -Force
+
+      If (-not $UserExists)
       {
-        $null = $UserInfo.Description
-        $null = $UserInfo.FullName
-      
-        New-LocalUser -Name $UserName -Description $UserInfo.Description -FullName $UserInfo.FullName -Password $PasswordUser -WhatIf -Verbose
+        $UserDescription = ($UserInfo.Description)
+        $UserFullName = ($UserInfo.FullName)
+
+        Write-Verbose -Message ('Creating {0} Account' -f $UserFullName)
+        New-LocalUser -Name $UserName -Description $UserDescription -FullName ($UserInfo.FullName) -Password $SecurePassword -WhatIf -Verbose
       }
-      If ($UserName -in $CurrentUsers)
+      $UserExists = Get-LocalUser -Name $UserName -ErrorAction SilentlyContinue
+      If ($UserExists)
       {
         Add-LocalGroupMember -Group $UserInfo.AccountGroup -Member $UserName -WhatIf
       }
     }
   }
-
-  function Uninstall-Software
-  {
+  function Uninstall-Software  {
     <#
         .SYNOPSIS
-        Short Description
-        .DESCRIPTION
-        Detailed Description
-        .EXAMPLE
-        Uninstall-Software
-        explains how to use the command
-        can be multiple lines
-        .EXAMPLE
-        Uninstall-Software
-        another example
-        can have as many examples as you like
-
-        Unistall software
+        Uninstall unneeded or unwanted software
     #>
 
-    function Uninstall-Software
-    {
-      <#
-          .SYNOPSIS
-          Uninstall unneeded or unwanted software
-
-      #>
-      [CmdletBinding()]
-      param
-      (
-        [Parameter(Mandatory, Position = 0)]
-        [String]$SoftwareName
-      )
+    [CmdletBinding(SupportsShouldProcess)]
+    param
+    (
+      [Parameter(Mandatory, Position = 0)]
+      [String]$SoftwareName
+    )
   
-      $SoftwareList = (Get-ChildItem -Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall, HKLM:\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall  |
-        Get-ItemProperty | 
-        Where-Object -FilterScript {
-          $_.DisplayName -match $SoftwareName
-        } |
-      Select-Object -Property DisplayName, UninstallString)
+    $SoftwareList = (Get-ChildItem -Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall, HKLM:\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall  |
+      Get-ItemProperty | 
+      Where-Object -FilterScript {
+        $_.DisplayName -match $SoftwareName
+      } |
+    Select-Object -Property DisplayName, UninstallString)
     
 
-      #$SoftwareList
+    #$SoftwareList
 
-      ForEach ($App in $SoftwareList) 
+    ForEach ($App in $SoftwareList) 
+    {
+      #$App
+      #$App.UninstallString
+      If ($App.UninstallString) 
       {
-        #$App
-        #$App.UninstallString
-        If ($App.UninstallString) 
-        {
-          $uninst = ($App.UninstallString)
-          $uninst = $uninst.Replace('{',' ').Replace('}',' ')
-          Invoke-Expression -Command $uninst 
-          #Write-Host $uninst
-        }
+        $uninst = ($App.UninstallString)
+        $uninst = $uninst.Replace('{',' ').Replace('}',' ')
+        Invoke-Expression -Command $uninst 
+        #Write-Host $uninst
       }
     }
   }
- 
- 
-  Function Set-WallPaper
-  {
+  function Set-WallPaper  {
     <#
         .SYNOPSIS
         Change Desktop picture/background
@@ -186,7 +202,7 @@ Begin{
     param
     (
       [Parameter(Position = 0)]
-      [string]$BackgroundSource = 'c:Temp\Pictures\BG.jpg',
+      [string]$BackgroundSource = "$env:HOMEDRIVE\Temp\Pictures\BG.jpg",
       [string]$BackupgroundDest = "$env:PUBLIC\Pictures\BG.jpg"
     )
     If ((Test-Path -Path $BackgroundSource) -eq $false)
@@ -198,10 +214,7 @@ Begin{
     Set-ItemProperty -Path 'HKCU:\Control Panel\Desktop\' -Name TileWallpaper -Value '0'
     Set-ItemProperty -Path 'HKCU:\Control Panel\Desktop\' -Name WallpaperStyle -Value '10' -Force
   }
-
-  
-  function Set-CdLetterToX
-  {
+  function Set-CdLetterToX  {
     <#
         .SYNOPSIS
         Test for a CD and change the drive Letter to X:
@@ -215,26 +228,25 @@ Begin{
    
     If ($CdDrive)
     {
-      Write-Verbose -Message ('Changing{0} drive letter to X:' -f ([string]$CdDrive.DriveLetter))
-      $CdDrive | Set-WmiInstance -Arguments @{
-        DriveLetter = 'X:'
+      if(-not (Test-Path -Path X:\))
+      {
+        Write-Verbose -Message ('Changing{0} drive letter to X:' -f ([string]$CdDrive.DriveLetter))
+        $CdDrive | Set-WmiInstance -Arguments @{
+          DriveLetter = 'X:'
+        }
       }
     }
   }
 }
-
+  
 Process{
-  New-Folder -NewFolder  "$env:HOMEDRIVE\CyberUpdates"
+  New-Folder -NewFolderList  CyberUpdates, ScapReports
   Add-UsersAndGroups
-  #Set-CdLetterToX
+  Set-CdLetterToX
   #Set-WallPaper
   #Uninstall-Software
 
 }
-
-
-
-
 End{}
 
 
