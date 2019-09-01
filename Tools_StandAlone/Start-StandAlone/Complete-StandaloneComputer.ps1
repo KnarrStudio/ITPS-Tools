@@ -57,27 +57,8 @@ Begin{
       Password            = '1qaz@WSX3edc$RFV'
     }
   }
-  $NewFolderInfo = @{
-      CyberUpdates    = @{
-                    ItemType = 'Directory'
-                    FullPath = 'C:\CyberUpdates'
-                    Description         = 'Contains Monthly Updates and Scan Reports'
-                    ACLGroup        = 'Administrators'
-                    ACLControl = 'Full Control'
-                    ReadMeText = 'This is the working folder for the monthly updates and scanning.'
-                    ReadMeFile = 'README.TXT'
-    }
-    ScanReports    = @{
-                    ItemType = 'Directory'
-                    FullPath = 'C:\CyberUpdates\ScanReports'
-                    Description         = 'Contains Monthly Scan Reports'
-                    ACLGroup        = 'Administrators'
-                    ACLControl = 'Full Control'
-                    ReadMeText = 'This is where the "IA" scans engines and reports will be kept.'
-                    ReadMeFile = 'README.TXT'
-    }
-    
-    }
+
+
 
   # Variables
   $NewGroups = @('OMC_Users', 'OMC_Admins', 'TestGroup')
@@ -87,41 +68,43 @@ Begin{
   #$CurrentGroups = Get-LocalGroup
   
   # House keeping
-  function New-Folder  {
-$NewFolderInfo = [ordered]@{
-  CyberUpdates = @{
-    ItemType    = 'Directory'
-    FullPath    = "$env:HOMEDRIVE\CyberUpdates"
-    Description = 'Contains Monthly Updates and Scan Reports'
-    ACLGroup    = 'Administrators'
-    ACLControl  = 'Full Control'
-    ReadMeText  = 'This is the working folder for the monthly updates and scanning.'
-    ReadMeFile  = 'README.TXT'
-  }
-  ScanReports  = @{
-    ItemType    = 'Directory'
-    FullPath    = "$env:HOMEDRIVE\CyberUpdates\ScanReports"
-    Description = 'Contains Monthly Scan Reports'
-    ACLGroup    = 'Administrators'
-    ACLControl  = 'Full Control'
-    ReadMeText  = 'This is where the "IA" scans engines and reports will be kept.'
-    ReadMeFile  = 'README.TXT'
-  }
-}
 
-
-foreach ($NewFolder in $NewFolderInfo.key)
-{
-  
-  $NewFolderPath = $NewFolderInfo.$NewFolder.FullPath
-    
-  If(-not (Test-Path -Path $NewFolderPath))
+  function New-Folder  
   {
-    New-Item -Path $NewFolderPath -ItemType Directory -Force
+    $NewFolderInfo = [ordered]@{
+      CyberUpdates = @{
+        Path       = 'C:\CyberUpdates'
+        ACLGroup   = 'Administrators'
+        ACLControl = 'Full Control'
+        ReadMeText = 'This is the working folder for the monthly updates and scanning.'
+        ReadMeFile = 'README.TXT'
+      }
+      ScanReports  = @{
+        Path       = 'C:\CyberUpdates\ScanReports'
+        ACLGroup   = 'Administrators'
+        ACLControl = 'Full Control'
+        ReadMeText = 'This is where the "IA" scans engines and reports will be kept.'
+        ReadMeFile = 'README.TXT'
+      }
+    }
+
+    foreach($ItemKey in $NewFolderInfo.keys)
+    {
+      $NewFolderPath = $NewFolderInfo.$ItemKey.Path
+      $NewFile = $NewFolderInfo.$ItemKey.ReadMeFile
+      $FileText = $NewFolderInfo.$ItemKey.ReadMeText
+    
+      If(-not (Test-Path -Path $NewFolderPath))
+      {
+        New-Item -Path $NewFolderPath -ItemType Directory -Force -WhatIf
+        $FileText | Out-File -FilePath $NewFolderPath"\"$NewFile -WhatIf
+      }
+    }
   }
-}
-  }
-  function Add-UsersAndGroups  {
+
+
+  function Add-UsersAndGroups  
+  {
     <#
         .SYNOPSIS
         Short Description
@@ -157,7 +140,8 @@ foreach ($NewFolder in $NewFolderInfo.key)
       }
     }
   }
-  function Uninstall-Software  {
+  function Uninstall-Software  
+  {
     <#
         .SYNOPSIS
         Uninstall unneeded or unwanted software
@@ -170,30 +154,48 @@ foreach ($NewFolder in $NewFolderInfo.key)
       [String]$SoftwareName
     )
   
-    $SoftwareList = (Get-ChildItem -Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall, HKLM:\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall  |
+    
+    function Get-SoftwareList
+    {
+      param
+      (
+        [Object]
+        [Parameter(Mandatory = $true, ValueFromPipeline = $true, HelpMessage = 'Data to filter')]
+        $InputObject
+      )
+      process
+      {
+        if ($InputObject.DisplayName -match $SoftwareName)
+        {
+          $InputObject
+        }
+      }
+    }
+
+    $SoftwareList = $null
+
+    $app = (Get-ChildItem -Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall, HKLM:\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall  |
       Get-ItemProperty | 
-      Where-Object -FilterScript {
-        $_.DisplayName -match $SoftwareName
-      } |
+      Get-SoftwareList |
     Select-Object -Property DisplayName, UninstallString)
     
 
     #$SoftwareList
 
-    ForEach ($App in $SoftwareList) 
+    ForEach ($app in $SoftwareList) 
     {
-      #$App
       #$App.UninstallString
-      If ($App.UninstallString) 
+      If ($app.UninstallString) 
       {
-        $uninst = ($App.UninstallString)
-        $uninst = $uninst.Replace('{',' ').Replace('}',' ')
-        Invoke-Expression -Command $uninst 
+        $uninst = ($app.UninstallString)
+        $GUID = ($uninst.split('{')[1]).trim('}')
+        Start-Process -FilePath 'msiexec.exe' -ArgumentList "/X $GUID /passive" -Wait
         #Write-Host $uninst
       }
     }
   }
-  function Set-WallPaper  {
+  function Set-WallPaper  
+  {
     <#
         .SYNOPSIS
         Change Desktop picture/background
@@ -202,8 +204,10 @@ foreach ($NewFolder in $NewFolderInfo.key)
     param
     (
       [Parameter(Position = 0)]
-      [string]$BackgroundSource = "$env:HOMEDRIVE\Temp\Pictures\BG.jpg",
-      [string]$BackupgroundDest = "$env:PUBLIC\Pictures\BG.jpg"
+      #[string]$BackgroundSource = "$env:HOMEDRIVE\Windows\Web\Wallpaper\Windows\img0.jpg",
+      #[string]$BackupgroundDest = "$env:PUBLIC\Pictures\BG.jpg"
+    [string]$BackgroundSource = "$env:HOMEDRIVE\Windows\Web\Wallpaper\Windows\img0.jpg",
+      [string]$BackupgroundDest = "$env:HOMEDRIVE\Windows\Web\Wallpaper\Windows\img0.jpg"
     )
     If ((Test-Path -Path $BackgroundSource) -eq $false)
     {
@@ -214,7 +218,8 @@ foreach ($NewFolder in $NewFolderInfo.key)
     Set-ItemProperty -Path 'HKCU:\Control Panel\Desktop\' -Name TileWallpaper -Value '0'
     Set-ItemProperty -Path 'HKCU:\Control Panel\Desktop\' -Name WallpaperStyle -Value '10' -Force
   }
-  function Set-CdLetterToX  {
+  function Set-CdLetterToX  
+  {
     <#
         .SYNOPSIS
         Test for a CD and change the drive Letter to X:
@@ -240,9 +245,9 @@ foreach ($NewFolder in $NewFolderInfo.key)
 }
   
 Process{
-  New-Folder -NewFolderList  CyberUpdates, ScapReports
-  Add-UsersAndGroups
-  Set-CdLetterToX
+  New-Folder 
+  #Add-UsersAndGroups
+  #Set-CdLetterToX
   #Set-WallPaper
   #Uninstall-Software
 
