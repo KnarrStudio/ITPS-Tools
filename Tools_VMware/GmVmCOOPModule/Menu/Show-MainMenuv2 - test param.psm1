@@ -39,12 +39,12 @@
       .OUTPUTS
       List of output types produced by this function.
   #>
-  param([Parameter(Mandatory,HelpMessage='The tile of the menu.')]
+  param([Parameter(Mandatory,HelpMessage = 'The tile of the menu.')]
     [String]$Title, 
-    [Parameter(Mandatory,HelpMessage='Add one or more items you want in your menu.')][String[]]$MenuItems, 
-    [Parameter(Mandatory,HelpMessage='Title text color')][String]$TitleColor, 
-    [Parameter(Mandatory,HelpMessage='Outline box color')][String]$LineColor, 
-    [Parameter(Mandatory,HelpMessage='Menu items color')][String]$MenuItemColor
+    [Parameter(Mandatory,HelpMessage = 'Add one or more items you want in your menu.')][String[]]$MenuItems, 
+    [Parameter(Mandatory,HelpMessage = 'Title text color')][String]$TitleColor, 
+    [Parameter(Mandatory,HelpMessage = 'Outline box color')][String]$LineColor, 
+    [Parameter(Mandatory,HelpMessage = 'Menu items color')][String]$MenuItemColor
   )
   
 
@@ -52,7 +52,7 @@
   [string]$Title = "$Title"
   $TitleCount = $Title.Length
   $LongestMenuItem = ($MenuItems | Measure-Object -Maximum -Property Length).Maximum
-  if  ($TitleCount -lt $LongestMenuItem)
+  if ($TitleCount -lt $LongestMenuItem)
   {
     $reference = $LongestMenuItem
   }
@@ -95,7 +95,7 @@
   Write-Host '╠' -NoNewline -f $LineColor
   Write-Host $Line -NoNewline -f $LineColor
   Write-Host '╣' -f $LineColor
-  $i = 1
+  $i = 0
   foreach($menuItem in $MenuItems)
   {
     $number = $i++
@@ -115,5 +115,5 @@
 
 
 #Create-Menu -Title "THIS IS TITLE" -MenuItems "Exchange Server","Active Directory","Sytem Center Configuration Manager","Lync Server","Microsoft Azure" -TitleColor Red -LineColor Cyan -MenuItemColor Yellow
-Create-Menu -Title 'Welcome to the Maintenance Center' -MenuItems 'Set Safety On/Off', 'EXIT', "Move all VM's to one host", 'Reboot Empty host', "Balance all VM's per 'tag'", 'Move and Reboot and Balance VM environment', 'VM/Host information', 'Exit' -TitleColor Red -LineColor Cyan -MenuItemColor Yellow
+Create-Menu -Title 'Welcome to the Maintenance Center' -MenuItems 'Set Safety On/Off', 'EXIT', "Move all VM's to one host", 'Reboot Empty host', "Balance all VM's per 'tag'", 'Move and Reboot and Balance VM environment', 'VM/Host information' -TitleColor Red -LineColor Cyan -MenuItemColor Yellow
 
