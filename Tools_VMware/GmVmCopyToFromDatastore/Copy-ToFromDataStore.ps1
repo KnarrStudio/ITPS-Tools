@@ -1,4 +1,5 @@
-﻿# Re quires Admin
+﻿#Requires -runasadministrator
+
 # Re quires PowerCli
 
 Function Copy-ToFromDatastore 
@@ -27,12 +28,9 @@ Function Copy-ToFromDatastore
       Using the "CopyToLocalSystem" switch copies files from abc:\ to c:\coding 
 
       .NOTES
-      Script Name: DataStoreCopy.ps1
-      Author Name: Erik Arnesen
-      Version : 1.0
-      Mod Date: 9/14/2017
-      Contact : 836-9087
-      Copy of this file is located in S:\Scripts
+      Script Name: Copy-ToFromDatastore.ps1
+      Author Name: Erik 
+
          
       Versions
       1.0 New Script
@@ -50,11 +48,13 @@ Function Copy-ToFromDatastore
 
   [CmdletBinding(DefaultParameterSetName = 'CopyToDatastore',SupportsShouldProcess,ConfirmImpact = 'High')]
   param(
-    [Parameter(Position = 1,mandatory,helpmessage = 'This is the custom name of the drive you can remember.  ex. vmds, plum' )]
+    [Parameter(Position  = 0,HelpMessage = 'VCenter Server to perform work against', Mandatory = $true)]
+    [String]$VCenterIPAddress,
+    [Parameter(Position = 1,mandatory,helpmessage = 'This is the custom name of the drive you can remember.  ex. Mon,Tue,Wed' )]
     [ValidateLength(1,3)]
     [Alias('RemoteName')][string]$dsname,
       
-    [Parameter(Position = 0,ValueFromPipeline)]
+    [Parameter(Position = 2,ValueFromPipeline)]
     [Alias('Source')]
     [String]$LocalFolder = "$env:homedrive\Temp" ,
       
@@ -66,7 +66,7 @@ Function Copy-ToFromDatastore
       
   )
    
-  #Connect-viserver -Server 214.54.192.21
+  Connect-viserver -Server $VCenterIPAddress
 
   #$datastore = Get-Datastore | Select-Object -ExpandProperty Name | Out-GridView -PassThru
 
