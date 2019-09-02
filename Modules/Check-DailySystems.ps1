@@ -1,6 +1,8 @@
-﻿<#
+﻿
+<#
     .SYNOPSIS
     Daily checks of Active Directory, the user, the workstation and the servers.
+    
     .DESCRIPTION
     Checks:
     Domain Controller status - Replication, Verifies the location of the FSMO roles ....  
@@ -20,8 +22,10 @@
     Reports:
     Checks Status
     Repairs Completed
+
     .PARAMETER <paramName>
     <Description of script parameter>
+
     .EXAMPLE
     <An example of using the script>
 #>
