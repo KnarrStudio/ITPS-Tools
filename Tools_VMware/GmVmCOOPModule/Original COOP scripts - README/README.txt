@@ -1,1 +1,0 @@
-Use these for notes and DELETE once the replacement is working.
