@@ -48,10 +48,14 @@
     )
     Process
     {
-      Get-ChildItem -Path $InputItem -Recurse -Force
+      $SelectedFolderItems = Get-ChildItem -Path $InputItem -Recurse -Force
 
       Write-Debug -Message ('Get-Recursed = {0}' -f $InputItem)
       Write-Verbose -Message ('Get-Recursed = {0}' -f $InputItem)
+      if($SelectedFolderItems -eq $null){
+      $SelectedFolderItems = Get-ChildItem -Path $InputItem -Recurse -Force
+      }
+      Return $SelectedFolderItems = Get-ChildItem -Path $InputItem -Recurse -Force
   }}
   
   function Select-FolderToCompare
@@ -82,12 +86,12 @@
   $SecondFolderSelected = Select-FolderToCompare -InputItem $SecondFolder -Title "Compare to $FirstFolderSelected"
   Write-Debug -Message ('SecondFolderSelected  = {0}' -f $SecondFolderSelected)
 
-  $FirstCompare = Get-ChildItem -Path $FirstFolderSelected -Recurse -Force # 
-  #$FirstCompare = Get-Recursed -InputItem $FirstFolderSelected
+  #$FirstCompare = Get-ChildItem -Path $FirstFolderSelected -Recurse -Force # 
+  $FirstCompare = Get-Recursed -InputItem $FirstFolderSelected
   Write-Debug -Message ('FirstCompare  = {0}' -f $FirstCompare)
 
-  $SecondCompare = Get-ChildItem -Path $SecondFolderSelected -Recurse -Force #
-  #$SecondCompare = Get-Recursed -InputItem $SecondFolderSelected
+  #$SecondCompare = Get-ChildItem -Path $SecondFolderSelected -Recurse -Force #
+  $SecondCompare = Get-Recursed -InputItem $SecondFolderSelected
   Write-Debug -Message ('SecondCompare  = {0}' -f $SecondCompare)
 
   Compare-Object -ReferenceObject $FirstCompare -DifferenceObject $SecondCompare
