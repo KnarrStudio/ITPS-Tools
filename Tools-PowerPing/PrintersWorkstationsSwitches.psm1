@@ -1,7 +1,5 @@
-﻿
-  #Content
-  #requires -Modules PrintManagement
-  #requires -version 3.0 
+﻿#requires -Modules PrintManagement
+#requires -version 3.0 
 
 
 $PrintServer = 'PrintServer'
