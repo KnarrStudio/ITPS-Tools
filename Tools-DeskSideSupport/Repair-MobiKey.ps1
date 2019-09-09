@@ -21,7 +21,7 @@ function Repair-MobiKey
 
   #>
 
-  [CmdletBinding(HelpUri = 'https://github.com/KnarrStudio/PS-Scripts/wiki/MobiKey-Repair',
+  [CmdletBinding(HelpUri = 'https://github.com/KnarrStudio/Tools-DeskSideSupport/Repair-MobiKey.ps1',
   ConfirmImpact = 'Medium')]
   [OutputType([String])]
   Param
