@@ -29,7 +29,9 @@ if($TotalPrinters -gt 0)
     $PrinterName = $OnePrinter.Name
     if ($PrinterName -ne 'Name')
     {
-      $PrinterIpAddress = Get-PrinterPort -ComputerName $PrintServer -Name $PrinterName | Select-Object -ExpandProperty PrinterHostAddress -ErrorAction SilentlyContinue
+      $PortName = (get-printer -ComputerName $PrintServer -Name $PrinterName).PortName
+      $PrinterIpAddress = Get-PrinterPort -ComputerName $PrintServer -Name $PortName | Select-Object -ExpandProperty PrinterHostAddress -ErrorAction SilentlyContinue
+      
       if ($PrinterIpAddress -match '192.')
       {
         if(-not  $(Test-Connection -ComputerName $PrinterIpAddress -ErrorAction SilentlyContinue -Count 1))
