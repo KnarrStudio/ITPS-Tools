@@ -1,5 +1,4 @@
-﻿#requires -Modules PrintManagement
-#requires -version 3.0 
+﻿#requires -Version 3.0 -Modules PrintManagement
 
 
 $PrintServer = 'PrintServer'
@@ -22,6 +21,7 @@ Export-Csv -Path $PrinterSiteList -NoTypeInformation
 $PrinterList = Import-Csv -Path $PrinterSiteList # -Header Name
 $TotalPrinters = $PrinterList.count -1
  
+
 if($TotalPrinters -gt 0)
 {
   foreach($OnePrinter in $PrinterList)
@@ -29,7 +29,8 @@ if($TotalPrinters -gt 0)
     $PrinterName = $OnePrinter.Name
     if ($PrinterName -ne 'Name')
     {
-      $PrinterIpAddress = Get-PrinterPort -ComputerName $PrintServer -Name $PrinterName | Select-Object -ExpandProperty PrinterHostAddress -ErrorAction SilentlyContinue
+      $PortName = (get-printer -ComputerName $PrintServer -Name $PrinterName).PortName
+      $PrinterIpAddress = Get-PrinterPort -ComputerName $PrintServer -Name $PortName | Select-Object -ExpandProperty PrinterHostAddress -ErrorAction SilentlyContinue
       if ($PrinterIpAddress -match '192.')
       {
         if(-not  $(Test-Connection -ComputerName $PrinterIpAddress -ErrorAction SilentlyContinue -Count 1))
@@ -67,8 +68,6 @@ Write-Host -Object ('You can find the full report at: {0}' -f $ReportFile)
 
 
 
-
- 
 
 
 function Test-AdWorkstationConnections
