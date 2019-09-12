@@ -48,7 +48,7 @@ function New-TimedStampFileName
   )
 
   switch ($StampFormat){
-    1
+    1 
     {
       $DateStamp = Get-Date -UFormat '%y%m%d%H%M'
     } # 1703162145 YYMMDDHHmm
@@ -62,10 +62,9 @@ function New-TimedStampFileName
     } # 160214855 jjjHHmmss
     4
     {
-      $DateStamp = Get-Date -Format o | ForEach-Object -Process {
-        $_ -replace ':', '.'
-      }
-      #$DateStamp = Get-Date -UFormat '%y/%m/%d_%H.%M' # 17/03/16_21.52
+      $DateStamp = Get-Date -Format o | ForEach-Object -Process {$_ -replace ':', '.'}
+      # 2019-09-02T14:09:02.1593508-04:00
+
     } 
     default
     {
@@ -75,3 +74,28 @@ function New-TimedStampFileName
 
   $baseNAME+'-'+$DateStamp+'.'+$FileType
 }
+
+# SIG # Begin signature block
+# MIID7QYJKoZIhvcNAQcCoIID3jCCA9oCAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
+# gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUzRGQ+jCRZI5Ysg+Vmkc0VjBW
+# romgggINMIICCTCCAXagAwIBAgIQyWSKL3Rtw7JMh5kRI2JlijAJBgUrDgMCHQUA
+# MBYxFDASBgNVBAMTC0VyaWtBcm5lc2VuMB4XDTE3MTIyOTA1MDU1NVoXDTM5MTIz
+# MTIzNTk1OVowFjEUMBIGA1UEAxMLRXJpa0FybmVzZW4wgZ8wDQYJKoZIhvcNAQEB
+# BQADgY0AMIGJAoGBAKYEBA0nxXibNWtrLb8GZ/mDFF6I7tG4am2hs2Z7NHYcJPwY
+# CxCw5v9xTbCiiVcPvpBl7Vr4I2eR/ZF5GN88XzJNAeELbJHJdfcCvhgNLK/F4DFp
+# kvf2qUb6l/ayLvpBBg6lcFskhKG1vbEz+uNrg4se8pxecJ24Ln3IrxfR2o+BAgMB
+# AAGjYDBeMBMGA1UdJQQMMAoGCCsGAQUFBwMDMEcGA1UdAQRAMD6AEMry1NzZravR
+# UsYVhyFVVoyhGDAWMRQwEgYDVQQDEwtFcmlrQXJuZXNlboIQyWSKL3Rtw7JMh5kR
+# I2JlijAJBgUrDgMCHQUAA4GBAF9beeNarhSMJBRL5idYsFZCvMNeLpr3n9fjauAC
+# CDB6C+V3PQOvHXXxUqYmzZpkOPpu38TCZvBuBUchvqKRmhKARANLQt0gKBo8nf4b
+# OXpOjdXnLeI2t8SSFRltmhw8TiZEpZR1lCq9123A3LDFN94g7I7DYxY1Kp5FCBds
+# fJ/uMYIBSjCCAUYCAQEwKjAWMRQwEgYDVQQDEwtFcmlrQXJuZXNlbgIQyWSKL3Rt
+# w7JMh5kRI2JlijAJBgUrDgMCGgUAoHgwGAYKKwYBBAGCNwIBDDEKMAigAoAAoQKA
+# ADAZBgkqhkiG9w0BCQMxDAYKKwYBBAGCNwIBBDAcBgorBgEEAYI3AgELMQ4wDAYK
+# KwYBBAGCNwIBFTAjBgkqhkiG9w0BCQQxFgQUrT4PZ+U1BAdkVb7vko7fVxGiOecw
+# DQYJKoZIhvcNAQEBBQAEgYBnYrCHO9r2blWXTKVXlKMCBt+okZma6/RGUR2tlVez
+# ht6WIKtur+aUB3L7yxELC5i1GmpdvmHVSIjyzzP4cUH3gcho9QcBnubBlOf1uJtT
+# 4DMFP/g8MkKTrCQa/GUk19jdKQVe/9brQK/dJSpZytKuXrges9TfjK8hSNySafrk
+# Xg==
+# SIG # End signature block
