@@ -18,9 +18,7 @@ function Repair-FolderRedirection
   Param
   (
     # $RemotePath Path to the Users's 'H:' drive
-    [Parameter(Mandatory = $false,
-        ValueFromPipelineByPropertyName,
-    Position = 0)]
+    [Parameter(Mandatory = $false,ValueFromPipelineByPropertyName,Position = 0)]
     [string]$RemotePath = "$env:HOMEDRIVE\_MyComputer"
   )
   
@@ -81,7 +79,6 @@ function Repair-FolderRedirection
     }
   }
 }
-
  
 Repair-FolderRedirection -RemotePath 'H:\_MyComputer' -Verbose
 

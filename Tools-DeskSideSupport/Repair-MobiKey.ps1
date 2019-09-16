@@ -1,5 +1,5 @@
 #requires -runasadministrator
-
+$MobikeyCertsPath = '\\Networkshare\mobikey\certs'
 function Repair-MobiKey 
 {
   <#
@@ -27,29 +27,29 @@ function Repair-MobiKey
   Param
   (
     # Param1 help description
-    [Parameter(Mandatory, Position = 0)]
+    [Parameter(Mandatory,HelpMessage='UNC or other path to where the certs are stored', Position = 0)]
     [string]$MobikeyCertsPath 
   )
   
   Begin
   {
-
     $ServiceName = 'Route1*'
     $MobikeyLocalPath = "$env:ProgramData\Mobikey\certs"
-  
   }
   Process
   {
-
     # First Stop the Mobikey Service 
     Write-Verbose -Message ('Stop Mobikey Service')
-    Stop-Service -Name $ServiceName
-     
+    while((Get-Service -Name $ServiceName).Status -ne 'Stopped'){
+      Stop-Service -Name $ServiceName
+      Start-Sleep -Seconds 5
+    }
+    
     # Delete the old files out of the ProgramData Dir
     if (Test-Path -Path $MobikeyLocalPath)
     {
       Write-Verbose -Message ('Delete old Certificate files')
-      Get-ChildItem -Path $MobikeyLocalPath -Recurse | Remove-Item -Force -WhatIf
+      Get-ChildItem -Path $MobikeyLocalPath -Recurse | Remove-Item -Force #-WhatIf
     }
   
     # Copy files from the File share to the local drive
@@ -61,18 +61,15 @@ function Repair-MobiKey
     # Start the Mobikey service 
     Write-Verbose -Message ('Start Mobikey Service')
     Start-Service -Name $ServiceName
-
   }
   End
   {
-    
     $ServiceStatus = (Get-Service -Name $ServiceName).Status
     Write-Verbose -Message ('Mobikey Service is {0}' -f $ServiceStatus)
   }
 }
 
-
-Repair-MobiKey -MobikeyCertsPath '\\Networkshare\mobikey\certs'
+Repair-MobiKey -MobikeyCertsPath $MobikeyCertsPath -Verbose
 
 
 
