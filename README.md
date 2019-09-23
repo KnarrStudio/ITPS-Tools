@@ -12,8 +12,11 @@ The idea behind these tools are as follows:
 
 ## Master, Branches and templates 
 - ### Master Branch: 
-  This is obviously the main branch and should be kept as close to working tools as possible.  It should be sanitized from any possible company related information.
+  This should be kept as close to working tools as possible.  It should be sanitized from any possible company related information.
     
+- ### Development Branch:
+  Primary branch that most will work from.  This is also where testing wouuld be done.
+
 - ### Branches:
   Used to create new tools or work on ones that are in progress.  The branches should be titled something meaningful, so that the work being done can be focused.
     
