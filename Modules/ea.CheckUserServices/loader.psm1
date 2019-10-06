@@ -8,4 +8,5 @@
 
 # LOADING ALL FUNCTION DEFINITIONS:
 
+. $PSScriptRoot\Test-AdWorkstationConnections.ps1
 . $PSScriptRoot\Test-PrinterStatus.ps1
