@@ -1,3 +1,5 @@
+#requires -Version 3.0 -Modules NetAdapter, NetTCPIP
+
 Begin {
 
 
@@ -100,12 +102,6 @@ Process {
   
   
 } # Process Block
-
-
-
-
-
-
 End {
   # Gateway Output
   if ($GatewayPresent -eq $true)
