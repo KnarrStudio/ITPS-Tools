@@ -17,7 +17,8 @@
   (
     # $RemotePath Path to the Users's 'H:' drive
     [Parameter(Mandatory = $false,ValueFromPipelineByPropertyName,Position = 0)]
-    [string]$RemotePath = "$env:HOMEDRIVE\_MyComputer"
+    [string]$RemotePath = "$env:HOMEDRIVE\_MyComputer",
+    [Parameter(Mandatory = $false,    Position = 1)][Switch]$TestPath
   )
   
   Begin
@@ -45,17 +46,23 @@
       Write-Verbose -Message ('FolderName = {0}' -f $FolderName)
       Write-Verbose -Message ('OldPath = {0}' -f $OldPath)
       Write-Verbose -Message ('NewPath = {0}' -f $NewPath)
-            
+
       If(-Not(Test-Path -Path $NewPath ))
       {
         Write-Verbose -Message ('NewPath = {0}' -f $NewPath)
-        New-Item -Path $NewPath -ItemType Directory
+        if(-Not $TestPath)
+        {
+          New-Item -Path $NewPath -ItemType Directory
+        }
       }
 
       Write-Verbose -Message ('OldPath = {0}' -f $OldPath)
       try
       {
-        Copy-Item -Path $OldPath -Destination $RemotePath -Recurse -ErrorAction stop  # -ErrorAction SilentlyContinue
+        if(-Not $TestPath)
+        {
+          Copy-Item -Path $OldPath -Destination $RemotePath -Recurse -ErrorAction stop 
+        }
       }
       catch
       {
@@ -71,8 +78,11 @@
         Get-ItemProperty -Path $RegKey -Name $FolderKey
 
         #Test Path - Get-ItemProperty -Path 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders'
- 
-        Set-ItemProperty -Path $RegKey -Name $FolderKey -Value $NewPath
+
+        if(-Not $TestPath)
+        {
+          Set-ItemProperty -Path $RegKey -Name $FolderKey -Value $NewPath
+        }
       }
     }
   }
