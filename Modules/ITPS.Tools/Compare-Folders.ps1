@@ -22,7 +22,7 @@
   (
     [Parameter(Mandatory, Position = 0,ValueFromPipeline, ValueFromPipelineByPropertyName)] [Alias('Source','OldFolder')]
     [string]$FirstFolder,
-    [Parameter(Mandatory = $False)][Alias('Destination','Staging')]
+    [Parameter(Mandatory=$False)][Alias('Destination','Staging')]
   [string]$SecondFolder = $null  )
 
   function Get-FolderStats
@@ -52,13 +52,11 @@
 
       Write-Debug -Message ('Get-Recursed = {0}' -f $InputItem)
       Write-Verbose -Message ('Get-Recursed = {0}' -f $InputItem)
-      if($SelectedFolderItems -eq $null)
-      {
+      if($SelectedFolderItems -eq $null){
         $SelectedFolderItems = Get-ChildItem -Path $InputItem -Recurse -Force
       }
       Return $SelectedFolderItems = Get-ChildItem -Path $InputItem -Recurse -Force
-    }
-  }
+  }}
   
   function Select-FolderToCompare
   {
@@ -78,8 +76,7 @@
     Return $FolderSelected
   }
 
-  if(-not $SecondFolder)
-  {
+  if(-not $SecondFolder){
     $SecondFolder = [String]$FirstFolder
   }
 
@@ -99,6 +96,7 @@
   }
   Write-Debug -Message ('SecondFolderSelected  = {0}' -f $SecondFolderSelected)
 
+
   #$FirstCompare = Get-ChildItem -Path $FirstFolderSelected -Recurse -Force # 
   $FirstCompare = Get-Recursed -InputItem $FirstFolderSelected
   Write-Debug -Message ('FirstCompare  = {0}' -f $FirstCompare)
@@ -115,4 +113,3 @@
   Write-Verbose -Message ("'<=' only in {0} " -f $FirstFolderSelected) 
   Write-Verbose -Message ("'=>' only in {0} " -f  $SecondFolderSelected) 
 }
-
