@@ -61,7 +61,7 @@
       {
         if(-Not $TestPath)
         {
-          Copy-Item -Path $OldPath -Destination $RemotePath -Recurse -ErrorAction stop 
+          Copy-Item -Path $OldPath -Destination $RemotePath -Force -Recurse -ErrorAction Stop
         }
       }
       catch
