@@ -1,7 +1,6 @@
 ﻿#requires -Version 2.0 -Modules NetTCPIP
 function Test-FiberSatillite
 {
-
   param
   (
     [Parameter(Position = 0)]
@@ -42,15 +41,18 @@ function Test-FiberSatillite
       Write-Host ('Round Trip Time is GOOD!') -BackgroundColor Green -ForegroundColor White
     }
   }
-  Write-Output -InputObject ('Average RTT is {0} ms.' -f [int]$RTT)
+<#  Write-Output -InputObject ('Average RTT is {0} ms.' -f [int]$RTT)
+  if ($RTT -lt 380){
+  Start-Process "${env:ProgramFiles(x86)}\Notepad++\notepad++.exe" }#>
 }
 
 Test-FiberSatillite -Verbose
+
 # SIG # Begin signature block
 # MIID7QYJKoZIhvcNAQcCoIID3jCCA9oCAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUZIny1tsXd2iW7isS91lzkqGf
-# q+mgggINMIICCTCCAXagAwIBAgIQyWSKL3Rtw7JMh5kRI2JlijAJBgUrDgMCHQUA
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQU+NGuIgxFMoOTsxt2AqcSkWFZ
+# aTmgggINMIICCTCCAXagAwIBAgIQyWSKL3Rtw7JMh5kRI2JlijAJBgUrDgMCHQUA
 # MBYxFDASBgNVBAMTC0VyaWtBcm5lc2VuMB4XDTE3MTIyOTA1MDU1NVoXDTM5MTIz
 # MTIzNTk1OVowFjEUMBIGA1UEAxMLRXJpa0FybmVzZW4wgZ8wDQYJKoZIhvcNAQEB
 # BQADgY0AMIGJAoGBAKYEBA0nxXibNWtrLb8GZ/mDFF6I7tG4am2hs2Z7NHYcJPwY
@@ -64,9 +66,9 @@ Test-FiberSatillite -Verbose
 # fJ/uMYIBSjCCAUYCAQEwKjAWMRQwEgYDVQQDEwtFcmlrQXJuZXNlbgIQyWSKL3Rt
 # w7JMh5kRI2JlijAJBgUrDgMCGgUAoHgwGAYKKwYBBAGCNwIBDDEKMAigAoAAoQKA
 # ADAZBgkqhkiG9w0BCQMxDAYKKwYBBAGCNwIBBDAcBgorBgEEAYI3AgELMQ4wDAYK
-# KwYBBAGCNwIBFTAjBgkqhkiG9w0BCQQxFgQUyCoYGXlaX6jAKwFv11QGrYFBwCYw
-# DQYJKoZIhvcNAQEBBQAEgYAMLOaFsUTE/lvdAv9IkNVpXuYLX3idSvtZXBEIbvwk
-# iEjWc6/9Mc5PUlZxBhaA6CJAhRJgDpKWcExYCvqVp8Q+d9QIEJ2EFgAyXBtMsDe1
-# phw6R049LF5qvcphIBC7sy6NbPxwnn6Okm8HJLjuvIe1B9v1HkojSDFQTUAgGMBO
-# DQ==
+# KwYBBAGCNwIBFTAjBgkqhkiG9w0BCQQxFgQUPzODUa4KJezRo4UcXx85B6gGFg8w
+# DQYJKoZIhvcNAQEBBQAEgYAUCNaEI3kUbE6z8fkrQ9FCxkfu5eV6waNPjBd6cmKk
+# nGQ+qk/MzIevwO3RWZhHJNO0jqPhEhWYIMtQsRM4sfGfooTQshf5xw5znxzJ7kZx
+# 55G6a3Uz5NIlExNQ/x6x/3vgeJBUrj/H3s4tUsgyNKBY68bo+4FNFd6GaLzezlep
+# ag==
 # SIG # End signature block
