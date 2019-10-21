@@ -1,4 +1,5 @@
-﻿#requires -Version 3.0 -Modules PrintManagement
+﻿#requires -Version 3.0 -Modules NetTCPIP, PrintManagement
+
 
 function Test-PrinterStatus
 {
@@ -154,6 +155,53 @@ function Test-AdWorkstationConnections
     Write-Host "This test was run by $env:USERNAME from $env:COMPUTERNAME"
     Write-Host ('You can find the full report at: {0}' -f $ReportFile)
   }
+}
+
+function Test-FiberSatillite
+{
+  param
+  (
+    [Parameter(Position = 0)]
+    [Object[]]
+    $Sites = ('www.google.com', 'www.bing.com', 'www.cnn.com', 'www.facebook.com', 'www.yahoo.com')
+  )
+  
+  $RttTotal = 0
+  $TotalSites = $Sites.Count
+  function Test-Verbose 
+  {
+    [Management.Automation.ActionPreference]::SilentlyContinue -ne $VerbosePreference
+  }
+  
+  ForEach ($Site in $Sites)  
+  {
+    $PingReply = Test-NetConnection -ComputerName $Site 
+    $RTT = $PingReply.PingReplyDetails.RoundtripTime
+    $RttTotal = $RttTotal + $RTT
+    
+    Write-Verbose -Message ('{0} - RoundTripTime is {1} ms.' -f $PingReply.Computername, $RTT)
+  }
+
+  $RTT = $RttTotal/$TotalSites
+    
+  if(Test-Verbose)
+  {
+    if($RTT -gt 380)
+    {
+      Write-Host('Although not always the case this could indicate that you are on the Satellite backup circuit.') -BackgroundColor Red -ForegroundColor White
+    }
+    ElseIf($RTT -gt 90)
+    {
+      Write-Host ('Although not always the case this could indicate that you are on the Puerto Rico backup circuit.') -BackgroundColor Yellow -ForegroundColor White
+    }
+    ElseIf($RTT -gt 0)
+    {
+      Write-Host ('Round Trip Time is GOOD!') -BackgroundColor Green -ForegroundColor White
+    }
+  }
+  <#  Write-Output -InputObject ('Average RTT is {0} ms.' -f [int]$RTT)
+      if ($RTT -lt 380){
+  Start-Process "${env:ProgramFiles(x86)}\Notepad++\notepad++.exe" }#>
 }
 
 #Test-AdWorkstationConnections -Bombastic
