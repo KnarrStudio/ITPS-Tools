@@ -1,33 +1,75 @@
 ﻿#requires -Version 2.0 -Modules NetTCPIP
-function Test-FiberSatillite
+function Test-FiberSatellite
 {
+  <#
+      .SYNOPSIS
+      "Pings" a group of sites or servers and gives a response in laymans terms.
+
+      .DESCRIPTION
+      This started due to our need to find out if we were running on Fiber or not.  There are some default off island sites that it will test, but you can pass them if you only want to check one or two sites.
+
+      .PARAMETER Sites
+      A single or list of sites or servers that you want to test against.
+
+      .PARAMETER OneLineOutput
+      Provides a single output line for those who just need answers.
+
+      .EXAMPLE
+      Test-FiberSatellite -Sites Value -OneLineOutput
+      Tests the Value and displays the output as a single line of text
+
+      .NOTES
+      Place additional notes here.
+
+      .LINK
+      https://github.com/KnarrStudio/ITPS-Tools/wiki
+
+      .OUTPUTS
+      To console or screen at this time.
+  #>
+
   param
   (
     [Parameter(Position = 0)]
-    [Object[]]
-    $Sites = ('www.google.com', 'www.bing.com', 'www.cnn.com', 'www.facebook.com', 'www.yahoo.com')
+    [Object[]] $Sites = ('LocalServer', 'localhost', 'www.google.com', 'www.bing.com', 'www.wolframalpha.com', 'www.yahoo.com'),
+    [Switch]$OneLineOutput
   )
   
-  $RttTotal = 0
-  $TotalSites = $Sites.Count
-    function Test-Verbose 
+  $RttTotal = $NotRight = 0
+  $TotalResponses = $TotalSites = $Sites.Count
+  function Test-Verbose 
   {
     [Management.Automation.ActionPreference]::SilentlyContinue -ne $VerbosePreference
   }
   
-    ForEach ($Site in $Sites)  
+  ForEach ($Site in $Sites)  
   {
     $PingReply = Test-NetConnection -ComputerName $Site 
-    $RTT = $PingReply.PingReplyDetails.RoundtripTime
-    $RttTotal = $RttTotal + $RTT
+    if($PingReply.PingSucceeded -eq $true)
+    {
+      $RTT = $PingReply.PingReplyDetails.RoundtripTime
+      $RttTotal = $RttTotal + $RTT
     
-    Write-Verbose -Message ('{0} - RoundTripTime is {1} ms.' -f $PingReply.Computername, $RTT)
+      if($RTT -eq 0)
+      {
+        $TotalResponses = $TotalResponses - 1
+        $NotRight = $NotRight + 1
+      }
+      Write-Verbose -Message ('{0} - RoundTripTime is {1} ms.' -f $PingReply.Computername, $RTT)
+    }
+    Else
+    {
+      $TotalResponses = $TotalResponses - 1
+    }
   }
 
-  $RTT = $RttTotal/$TotalSites
-    
-  if(Test-Verbose)
+  $RTT = $RttTotal/$TotalResponses
+  $TimeStamp = Get-Date -Format 'dd-MMM-yyyy HH:mm'
+  if(-not $OneLineOutput)
   {
+    Write-Host ('The Ping-O-Matic Fiber Tester!') -BackgroundColor DarkYellow -ForegroundColor White
+    <#    if(Test-Verbose)
+    {#>
     if($RTT -gt 380)
     {
       Write-Host('Although not always the case this could indicate that you are on the Satellite backup circuit.') -BackgroundColor Red -ForegroundColor White
@@ -36,23 +78,34 @@ function Test-FiberSatillite
     {
       Write-Host ('Although not always the case this could indicate that you are on the Puerto Rico backup circuit.') -BackgroundColor Yellow -ForegroundColor White
     }
-    ElseIf($RTT -gt 0)
+    ElseIf($RTT -gt 1)
     {
       Write-Host ('Round Trip Time is GOOD!') -BackgroundColor Green -ForegroundColor White
     }
+    # }
   }
-<#  Write-Output -InputObject ('Average RTT is {0} ms.' -f [int]$RTT)
-  if ($RTT -lt 380){
+  Write-Host ('{1} - {3} tested {0} off island computers and {2} responded. The average response time:' -f $TotalSites, $TimeStamp, $TotalResponses, $env:USERNAME) -ForegroundColor DarkYellow -NoNewline
+  Write-Output -InputObject (' {0} ms' -f [int]$RTT)
+
+  if($NotRight -gt 0)
+  {
+    Write-Output -InputObject ('{0} Responded with 0 ms' -f $NotRight)
+  }
+
+  <#  Write-Output -InputObject ('Average RTT is {0} ms.' -f [int]$RTT)
+      if ($RTT -lt 380){
   Start-Process "${env:ProgramFiles(x86)}\Notepad++\notepad++.exe" }#>
 }
 
-Test-FiberSatillite -Verbose
+Test-FiberSatellite -Verbose 
+
+
 
 # SIG # Begin signature block
 # MIID7QYJKoZIhvcNAQcCoIID3jCCA9oCAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQU+NGuIgxFMoOTsxt2AqcSkWFZ
-# aTmgggINMIICCTCCAXagAwIBAgIQyWSKL3Rtw7JMh5kRI2JlijAJBgUrDgMCHQUA
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUdWmWw1rUEJr83YVkc/tFLe/m
+# d8ygggINMIICCTCCAXagAwIBAgIQyWSKL3Rtw7JMh5kRI2JlijAJBgUrDgMCHQUA
 # MBYxFDASBgNVBAMTC0VyaWtBcm5lc2VuMB4XDTE3MTIyOTA1MDU1NVoXDTM5MTIz
 # MTIzNTk1OVowFjEUMBIGA1UEAxMLRXJpa0FybmVzZW4wgZ8wDQYJKoZIhvcNAQEB
 # BQADgY0AMIGJAoGBAKYEBA0nxXibNWtrLb8GZ/mDFF6I7tG4am2hs2Z7NHYcJPwY
@@ -66,9 +119,9 @@ Test-FiberSatillite -Verbose
 # fJ/uMYIBSjCCAUYCAQEwKjAWMRQwEgYDVQQDEwtFcmlrQXJuZXNlbgIQyWSKL3Rt
 # w7JMh5kRI2JlijAJBgUrDgMCGgUAoHgwGAYKKwYBBAGCNwIBDDEKMAigAoAAoQKA
 # ADAZBgkqhkiG9w0BCQMxDAYKKwYBBAGCNwIBBDAcBgorBgEEAYI3AgELMQ4wDAYK
-# KwYBBAGCNwIBFTAjBgkqhkiG9w0BCQQxFgQUPzODUa4KJezRo4UcXx85B6gGFg8w
-# DQYJKoZIhvcNAQEBBQAEgYAUCNaEI3kUbE6z8fkrQ9FCxkfu5eV6waNPjBd6cmKk
-# nGQ+qk/MzIevwO3RWZhHJNO0jqPhEhWYIMtQsRM4sfGfooTQshf5xw5znxzJ7kZx
-# 55G6a3Uz5NIlExNQ/x6x/3vgeJBUrj/H3s4tUsgyNKBY68bo+4FNFd6GaLzezlep
-# ag==
+# KwYBBAGCNwIBFTAjBgkqhkiG9w0BCQQxFgQU2gcyN9iZb/2adCJka9kYBdJJ2fcw
+# DQYJKoZIhvcNAQEBBQAEgYBf8e73QlHuC8ktJbTsNp5kdduNf41ZYMWEmb/NJTf9
+# 98gRwCmCCQFP19qHTqEvjrzZUrTfh6Zt83L94O3mQmv1r91wRYPUweTDGvKsAExv
+# LbRlfhZRfOl5prCcIMvvJHZTn4Cs3eR9k6A3i+jabR04FXC9JApmVFFBMrXj9Zpk
+# 7g==
 # SIG # End signature block
