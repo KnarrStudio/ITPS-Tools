@@ -253,8 +253,8 @@ function Test-FiberSatellite
   Start-Process "${env:ProgramFiles(x86)}\Notepad++\notepad++.exe" }#>
 }
 
-Test-FiberSatellite -Verbose 
+<#Test-FiberSatellite -Verbose 
 Test-PrinterStatus -Verbose
 Test-AdWorkstationConnections -Bombastic
-
+#>
 
