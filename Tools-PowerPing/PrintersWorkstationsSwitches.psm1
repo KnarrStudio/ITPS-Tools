@@ -1,31 +1,15 @@
 ﻿#requires -Version 3.0 -Modules NetTCPIP, PrintManagement
 
-
 function Test-PrinterStatus
 {
-  <#
-      .SYNOPSIS
-      Short Description
-      .DESCRIPTION
-      Detailed Description
-      .EXAMPLE
-      Test-PrinterStatus
-      explains how to use the command
-      can be multiple lines
-      .EXAMPLE
-      Test-PrinterStatus
-      another example
-      can have as many examples as you like
-  #>
+
   param
   (
     [Parameter(Mandatory = $true,HelpMessage = 'Add PrintServer name', Position = 0)]
-    [string]
-    $PrintServer,
+    [string]$PrintServer,
     
     [Parameter(Mandatory = $true,HelpMessage = '\\NetworkShare\Reports\PrinterStatus or c:\temp',Position = 1)]
-    [string]
-    $PingReportFolder
+    [string]$PingReportFolder
   )
   
   $BadCount = 0
@@ -170,7 +154,6 @@ function Test-AdWorkstationConnections
   }
 }
 
-
 function Test-FiberSatellite
 {
   <#
@@ -213,7 +196,9 @@ function Test-FiberSatellite
   {
     [Management.Automation.ActionPreference]::SilentlyContinue -ne $VerbosePreference
   }
-  
+    if(-not $OneLineOutput)
+    {
+    Write-Host ('The Ping-O-Matic Fiber Tester!') -BackgroundColor DarkYellow -ForegroundColor White}
   ForEach ($Site in $Sites)  
   {
     $PingReply = Test-NetConnection -ComputerName $Site 
@@ -239,7 +224,6 @@ function Test-FiberSatellite
   $TimeStamp = Get-Date -Format 'dd-MMM-yyyy HH:mm'
   if(-not $OneLineOutput)
   {
-    Write-Host ('The Ping-O-Matic Fiber Tester!') -BackgroundColor DarkYellow -ForegroundColor White
     <#    if(Test-Verbose)
     {#>
     if($RTT -gt 380)
@@ -269,4 +253,8 @@ function Test-FiberSatellite
   Start-Process "${env:ProgramFiles(x86)}\Notepad++\notepad++.exe" }#>
 }
 
-#Test-AdWorkstationConnections -Bombastic
+Test-FiberSatellite -Verbose 
+Test-PrinterStatus -Verbose
+Test-AdWorkstationConnections -Bombastic
+
+

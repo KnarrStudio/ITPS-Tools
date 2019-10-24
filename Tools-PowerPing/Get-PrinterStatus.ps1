@@ -1,28 +1,15 @@
-﻿function Test-PrinterStatus
+#requires -Version 3.0 -Modules PrintManagement
+
+function Test-PrinterStatus
 {
-  <#
-      .SYNOPSIS
-      Short Description
-      .DESCRIPTION
-      Detailed Description
-      .EXAMPLE
-      Test-PrinterStatus
-      explains how to use the command
-      can be multiple lines
-      .EXAMPLE
-      Test-PrinterStatus
-      another example
-      can have as many examples as you like
-  #>
+
   param
   (
     [Parameter(Mandatory = $true,HelpMessage = 'Add PrintServer name', Position = 0)]
-    [string]
-    $PrintServer,
+    [string]$PrintServer,
     
     [Parameter(Mandatory = $true,HelpMessage = '\\NetworkShare\Reports\PrinterStatus or c:\temp',Position = 1)]
-    [string]
-    $PingReportFolder
+    [string]$PingReportFolder
   )
   
   $BadCount = 0
@@ -89,27 +76,7 @@
   Write-Verbose -Message "This test was run by $env:USERNAME from $env:COMPUTERNAME"
   Write-Verbose -Message ('You can find the full report at: {0}' -f $ReportFile)
 }
-# SIG # Begin signature block
-# MIID7QYJKoZIhvcNAQcCoIID3jCCA9oCAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
-# gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUsHYkPg23iaJI8zbpVsye7enr
-# 6GagggINMIICCTCCAXagAwIBAgIQyWSKL3Rtw7JMh5kRI2JlijAJBgUrDgMCHQUA
-# MBYxFDASBgNVBAMTC0VyaWtBcm5lc2VuMB4XDTE3MTIyOTA1MDU1NVoXDTM5MTIz
-# MTIzNTk1OVowFjEUMBIGA1UEAxMLRXJpa0FybmVzZW4wgZ8wDQYJKoZIhvcNAQEB
-# BQADgY0AMIGJAoGBAKYEBA0nxXibNWtrLb8GZ/mDFF6I7tG4am2hs2Z7NHYcJPwY
-# CxCw5v9xTbCiiVcPvpBl7Vr4I2eR/ZF5GN88XzJNAeELbJHJdfcCvhgNLK/F4DFp
-# kvf2qUb6l/ayLvpBBg6lcFskhKG1vbEz+uNrg4se8pxecJ24Ln3IrxfR2o+BAgMB
-# AAGjYDBeMBMGA1UdJQQMMAoGCCsGAQUFBwMDMEcGA1UdAQRAMD6AEMry1NzZravR
-# UsYVhyFVVoyhGDAWMRQwEgYDVQQDEwtFcmlrQXJuZXNlboIQyWSKL3Rtw7JMh5kR
-# I2JlijAJBgUrDgMCHQUAA4GBAF9beeNarhSMJBRL5idYsFZCvMNeLpr3n9fjauAC
-# CDB6C+V3PQOvHXXxUqYmzZpkOPpu38TCZvBuBUchvqKRmhKARANLQt0gKBo8nf4b
-# OXpOjdXnLeI2t8SSFRltmhw8TiZEpZR1lCq9123A3LDFN94g7I7DYxY1Kp5FCBds
-# fJ/uMYIBSjCCAUYCAQEwKjAWMRQwEgYDVQQDEwtFcmlrQXJuZXNlbgIQyWSKL3Rt
-# w7JMh5kRI2JlijAJBgUrDgMCGgUAoHgwGAYKKwYBBAGCNwIBDDEKMAigAoAAoQKA
-# ADAZBgkqhkiG9w0BCQMxDAYKKwYBBAGCNwIBBDAcBgorBgEEAYI3AgELMQ4wDAYK
-# KwYBBAGCNwIBFTAjBgkqhkiG9w0BCQQxFgQUAr7KgbhLDsW0kRE/2CnFWA+xCsww
-# DQYJKoZIhvcNAQEBBQAEgYA/NP2xKlIoaol3aNLQtF9urZxNxE2r1fDc6JD1JqK/
-# fOrBE+h03oc/6amkjKKoyZOEqUtBMkCnp6aUZSYUISDvufZ66z6MrR9NoQv0Ek7T
-# yZCvFBki+tfM6MC23gCUzO2OXdK2CQ7ROEPO4HNQFjaOQpZ0OsDxK3VLmV5I0b3x
-# YA==
-# SIG # End signature block
+
+Test-PrinterStatus -Verbose
+
+
