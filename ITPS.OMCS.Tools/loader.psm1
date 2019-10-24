@@ -8,5 +8,11 @@
 
 # LOADING ALL FUNCTION DEFINITIONS:
 
+. $PSScriptRoot\Add-NetworkPrinter.ps1
+. $PSScriptRoot\Compare-Folders.ps1
+. $PSScriptRoot\Get-InstalledSoftware.ps1
 . $PSScriptRoot\New-TimedStampFileName.ps1
+. $PSScriptRoot\Repair-FolderRedirection.ps1
+. $PSScriptRoot\Test-AdWorkstationConnections.ps1
+. $PSScriptRoot\Test-FiberSatellite.ps1
 . $PSScriptRoot\Test-PrinterStatus.ps1
