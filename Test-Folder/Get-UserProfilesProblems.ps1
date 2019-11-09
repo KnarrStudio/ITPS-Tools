@@ -1,1 +1,0 @@
-Get-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\ProfileList\*' | Where {$_.ProfileImagePath -match '.bak'}

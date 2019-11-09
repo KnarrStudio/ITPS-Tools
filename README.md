@@ -2,15 +2,21 @@
 
 ## IT PowerShell - Tools:
 The idea behind these tools are as follows:
-1. Create a series of tools that can be used to help in the day to day tasks or troubleshooting.  I would like to see maybe a menu system put together for some.  Where others would be only used for automations.
+1. Create a series of tools that can be used to help in the day to day tasks or troubleshooting.  
+1. These will be made into modules so the whole tool set can be loaded "imported" at one time.  The tech would have all the tools they need for the "day"
+1. Some might be a menu system.
+1. Others would be only be "commands".
 2. Colaborate on tools or troubleshooting.
 3. Give a home to scripts and remove the bad, unused or "v1.,v2,v3,org,good" versioning from the workplace share or c:\temp
 4. Better learn the value of GitHub
 
 ## Master, Branches and templates 
 - ### Master Branch: 
-  This is obviously the main branch and should be kept as close to working tools as possible.  It should be sanitized from any possible company related information.
+  This should be kept as close to working tools as possible.  It should be sanitized from any possible company related information.
     
+- ### Development Branch:
+  Primary branch that most will work from.  This is also where testing wouuld be done.
+
 - ### Branches:
   Used to create new tools or work on ones that are in progress.  The branches should be titled something meaningful, so that the work being done can be focused.
     
