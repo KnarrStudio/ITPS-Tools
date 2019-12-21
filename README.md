@@ -1,9 +1,9 @@
 # ITPS-Tools
 
-** This has been replaced by ** 
-https://github.com/KnarrStudio/ITPS.OMCS.Tools[https://github.com/KnarrStudio/ITPS.OMCS.Tools]
+### This has been replaced by
+https://github.com/KnarrStudio/ITPS.OMCS.Tools
 
-## IT PowerShell - Tools:
+#### IT PowerShell - Tools:
 The idea behind these tools are as follows:
 1. Create a series of tools that can be used to help in the day to day tasks or troubleshooting.  I would like to see maybe a menu system put together for some.  Where others would be only used for automations.
 2. Colaborate on tools or troubleshooting.
