@@ -21,12 +21,19 @@ function New-Folders
       Test1\test3\test2
 
   #>
-
-
   param
   (
-    [Parameter(ValueFromPipeline,Mandatory, Position = 0)]
-    [Object]$FolderList 
+    [Parameter(ValueFromPipeline,HelpMessage='CSV file to pull paths from',Mandatory=$true, Position = 0)]
+    [ValidateScript({
+          If($_ -match '.csv')
+          {
+            $true
+          }
+          Else
+          {
+            Throw 'Input file needs to be CSV'
+          }
+    })][String]$FolderList 
   )
   
   Write-Verbose -Message ('FolderList: {0}' -f $FolderList)
@@ -41,8 +48,7 @@ function New-Folders
   { 
     $FullPath = ('{0}\{1}' -f $RootPath, $Folder.FolderPath)
     Write-Verbose -Message $FullPath
-    
-    if (!(Test-Path -Path $FullPath))
+    if (-not (Test-Path -Path $FullPath))
     {
       try
       {
@@ -55,6 +61,8 @@ function New-Folders
     }
   }
 }
+
+
 
 $FolderList  = '.\folders.csv' 
 $FolderList | New-Folders -Verbose
