@@ -1,6 +1,9 @@
 # ITPS-Tools
 
-## IT PowerShell - Tools:
+### This has been replaced by
+https://github.com/KnarrStudio/ITPS.OMCS.Tools
+
+#### IT PowerShell - Tools:
 The idea behind these tools are as follows:
 1. Create a series of tools that can be used to help in the day to day tasks or troubleshooting.  
 1. These will be made into modules so the whole tool set can be loaded "imported" at one time.  The tech would have all the tools they need for the "day"
